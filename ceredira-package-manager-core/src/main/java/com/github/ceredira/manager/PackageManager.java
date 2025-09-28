@@ -1,14 +1,16 @@
 package com.github.ceredira.manager;
 
-import com.github.ceredira.model.Package;
+import com.github.ceredira.model.CpmPackage;
+import com.github.ceredira.model.PackageInfo;
 import com.github.ceredira.repository.LocalPackageRepository;
 import com.github.ceredira.repository.RemotePackageRepository;
 import com.github.ceredira.utils.DependencyResolver;
+import com.github.ceredira.utils.PackageMetadataLoader;
 import com.github.ceredira.utils.Utils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.File;
+import java.io.*;
 import java.text.MessageFormat;
 import java.util.List;
 
@@ -51,32 +53,36 @@ public class PackageManager {
         throw new RuntimeException("Не реализовано");
     }
 
-    public List<com.github.ceredira.model.Package> list(boolean localOnly) {
+    public List<CpmPackage> list(boolean localOnly) {
         throw new RuntimeException("Не реализовано");
     }
 
-    public List<com.github.ceredira.model.Package> search(String query) {
+    public List<CpmPackage> search(String query) {
         throw new RuntimeException("Не реализовано");
     }
 
-    public com.github.ceredira.model.Package info(String packageName) {
-        throw new RuntimeException("Не реализовано");
+    public PackageInfo info(String packageName) {
+        String getPackageInfoMsg = MessageFormat.format("Получение информации по пакету {0}", packageName);
+        log.info(getPackageInfoMsg);
+
+        PackageInfo packageInfo = PackageMetadataLoader.getPackageInfo(packageName);
+        return packageInfo;
     }
 
-    public List<com.github.ceredira.model.Package> outdated() {
+    public List<CpmPackage> outdated() {
         throw new RuntimeException("Не реализовано");
     }
 
     // Дополнительные методы
-    private void downloadAndExtract(com.github.ceredira.model.Package pkg) {
+    private void downloadAndExtract(CpmPackage pkg) {
         throw new RuntimeException("Не реализовано");
     }
 
-    private void saveToLocal(com.github.ceredira.model.Package pkg) {
+    private void saveToLocal(CpmPackage pkg) {
         throw new RuntimeException("Не реализовано");
     }
 
-    private boolean isInstalled(Package pkg) {
+    private boolean isInstalled(CpmPackage pkg) {
         throw new RuntimeException("Не реализовано");
     }
 }

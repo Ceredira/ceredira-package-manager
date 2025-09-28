@@ -1,6 +1,6 @@
 package com.github.ceredira.repository;
 
-import com.github.ceredira.model.Package;
+import com.github.ceredira.model.CpmPackage;
 
 import java.util.List;
 import java.util.Optional;
@@ -8,17 +8,17 @@ import java.util.Optional;
 public class LocalPackageRepository implements PackageRepository {
 
     @Override
-    public Optional<com.github.ceredira.model.Package> findByName(String name) {
+    public Optional<CpmPackage> findByName(String name) {
         return Optional.empty();
     }
 
     @Override
-    public List<com.github.ceredira.model.Package> findAll() {
+    public List<CpmPackage> findAll() {
         return List.of();
     }
 
     @Override
-    public List<Package> search(String query) {
+    public List<CpmPackage> search(String query) {
         return List.of();
     }
 }
