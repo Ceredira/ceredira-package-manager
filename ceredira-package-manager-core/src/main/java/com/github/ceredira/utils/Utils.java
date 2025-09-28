@@ -1,55 +1,36 @@
 package com.github.ceredira.utils;
 
+import lombok.extern.slf4j.Slf4j;
+
 import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.text.MessageFormat;
+import java.util.Arrays;
 
+
+@Slf4j
 public class Utils {
-    public static void init() {
-        // Массив с названиями каталогов
-        String[] directories = {"bin", "etc", "home", "lib", "log", "man", "opt", "tmp", "var"};
 
-        // Создание каталогов
-        for (String dirName : directories) {
-            File directory = new File(dirName);
-            if (!directory.exists()) {
-                boolean created = directory.mkdir();
-                if (created) {
-                    System.out.println("Каталог " + dirName + " создан.");
-                } else {
-                    System.err.println("Не удалось создать каталог " + dirName);
-                }
-            } else {
-                System.out.println("Каталог " + dirName + " уже существует.");
-            }
+    public static void init(File rootFolder) {
+        // Массив с названиями каталогов
+        String[] foldersNames = {"bin", "etc", "home", "lib", "log", "man", "opt", "tmp", "var"};
+
+        String[] files = {".gitignore", "README.md"};
+
+
+        String folderNamesString = MessageFormat.format("Массив с названиями каталогов: {0}", Arrays.toString(foldersNames));
+        log.info(folderNamesString);
+
+        log.info("Создание каталогов...");
+        for (String folderName : foldersNames) {
+            FolderUtils.createFolder(rootFolder, folderName);
         }
 
-        // Создание файлов
-        String[] files = {".gitignore", "README.md"};
+        String fileNamesString = MessageFormat.format("Массив с названиями файлов: {0}", Arrays.toString(files));
+        log.info(fileNamesString);
+
+        log.info("Создание файлов...");
         for (String fileName : files) {
-            File file = new File(fileName);
-            try {
-                if (!file.exists()) {
-                    boolean created = file.createNewFile();
-                    if (created) {
-                        System.out.println("Файл " + fileName + " создан.");
-                        // Заполнение README.md базовым содержимым
-                        if (fileName.equals("README.md")) {
-                            FileWriter writer = new FileWriter(file);
-                            writer.write("# Проект\n");
-                            writer.write("Описание проекта.\n");
-                            writer.close();
-                            System.out.println("Файл README.md заполнен базовым содержимым.");
-                        }
-                    } else {
-                        System.err.println("Не удалось создать файл " + fileName);
-                    }
-                } else {
-                    System.out.println("Файл " + fileName + " уже существует.");
-                }
-            } catch (IOException e) {
-                System.err.println("Ошибка при создании файла " + fileName + ": " + e.getMessage());
-            }
+            FileUtils.createFile(rootFolder, fileName);
         }
     }
 }
