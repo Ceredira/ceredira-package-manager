@@ -36,7 +36,7 @@ class PackageManagerTest {
     public void getPackageInfo() {
         PackageManager pm = new PackageManager(rootFolder);
 
-        PackageInfo packageInfo = pm.info("target/var/everything-1.4.1.1028-r1.yaml");
+        PackageInfo packageInfo = pm.info("src/test/resources/everything-1.4.1.1028-r1.yaml");
 
         log.info(packageInfo.toString());
     }

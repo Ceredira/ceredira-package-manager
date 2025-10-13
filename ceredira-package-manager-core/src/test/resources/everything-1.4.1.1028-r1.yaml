@@ -1,0 +1,66 @@
+schema_version: 1
+
+arch:
+  - x86_64
+
+os:
+  - windows
+
+category:
+  en:
+    - tools
+    - search
+  ru:
+    - утилиты
+    - поиск
+
+# Package information in CPM
+cpm_package:
+  name: everything
+  version: r1
+  size: ${package_size}
+  description:
+    en: Instantly search files and folders by their names
+    ru: Мгновенный поиск файлов и папок по их именам
+  author: unixshaman@gmail.com
+  changelog:
+    en: |
+      r1: package created
+    ru: |
+      r1: пакет создан
+
+# Information about the original package
+original_package:
+  name: Everything
+  version: 1.4.1.1028
+  size: ${original_package_size}
+  download_file_url: https://www.voidtools.com/Everything-1.4.1.1028.x64.zip
+  download_file_name: Everything-1.4.1.1028.x64.zip
+  author: David Carpenter (david.carpenter@voidtools.com)
+  website: https://www.voidtools.com/
+  changelog:
+    en: |
+      Friday, 20 June 2025: Version 1.4.1.1028
+      fixed a crash when getting help text from a context menu item that throws an exception.
+      updated localization.
+    ru: |
+      Пятница, 20 июня 2025 г.: Версия 1.4.1.1028
+      Исправлен сбой при получении текста справки из пункта контекстного меню, который приводил к исключению.
+      Обновлена локализация.
+
+dependencies:
+
+files:
+  - bin\Everything\Everything.exe
+  - bin\Everything\Everything.lng
+
+meta_files:
+  - apps\Everything.bat
+
+package_files:
+  - file_name: everything-1.4.1.1028-r1.7z
+    sha256: ${sha256}
+  - file_name: everything-1.4.1.1028-r1.cpmm.7z
+    sha256: ${sha256}
+  - file_name: everything-1.4.1.1028-r1.cpmd
+    sha256: ${sha256}

@@ -12,7 +12,7 @@ public class Utils {
 
     public static void init(File rootFolder) {
         // Массив с названиями каталогов
-        String[] foldersNames = {"bin", "etc", "home", "lib", "log", "man", "opt", "tmp", "var"};
+        String[] foldersNames = {"bin", "etc", "home", "lib", "log", "man", "opt", "tmp", "var", "var/cpm", "var/cpm/origin"};
 
         String[] files = {".gitignore", "README.md"};
 
