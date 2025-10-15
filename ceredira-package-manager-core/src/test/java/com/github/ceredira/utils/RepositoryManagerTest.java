@@ -1,12 +1,10 @@
 package com.github.ceredira.utils;
 
-import com.github.ceredira.model.Repository;
+import com.github.ceredira.model.RepositoriesConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -19,17 +17,19 @@ class RepositoryManagerTest {
 
     @Test
     void loadRepositories() {
-        List<Repository> repositories = RepositoryManager.loadRepositories("src/test/resources/repositories.yaml");
-        assertNotNull(repositories);
+        RepositoriesConfig repositoriesConfig = RepositoryManager.loadRepositories("src/test/resources/repositories.yaml");
+        assertNotNull(repositoriesConfig);
+        assertNotNull(repositoriesConfig.getRepositories());
+        assertFalse(repositoriesConfig.getRepositories().isEmpty());
 
-        log.info(repositories.toString());
+        log.info(repositoriesConfig.toString());
     }
 
     @Test
     void saveRepositories() {
-        List<Repository> repositories = RepositoryManager.loadRepositories("src/test/resources/repositories.yaml");
-        repositories.getFirst().setEnabled(false);
+        RepositoriesConfig repositoriesConfig = RepositoryManager.loadRepositories("src/test/resources/repositories.yaml");
+        repositoriesConfig.getRepositories().getFirst().setEnabled(false);
 
-        RepositoryManager.saveRepositories("target/repositories.yaml", repositories);
+        RepositoryManager.saveRepositories("target/repositories.yaml", repositoriesConfig);
     }
 }
