@@ -1,16 +1,12 @@
 package com.github.ceredira.model;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Map;
 
 @Data
 @NoArgsConstructor
 public class RepositoriesConfig {
-    @JsonProperty("repositories")
-    private List<Repository> repositories = new ArrayList<>();
+    private Map<String, Repository> repositories;
 }

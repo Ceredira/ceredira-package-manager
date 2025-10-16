@@ -2,10 +2,7 @@ package com.github.ceredira.manager;
 
 import com.github.ceredira.model.CpmPackage;
 import com.github.ceredira.model.PackageInfo;
-import com.github.ceredira.repository.LocalPackageRepository;
-import com.github.ceredira.repository.RemotePackageRepository;
-import com.github.ceredira.utils.DependencyResolver;
-import com.github.ceredira.utils.PackageMetadataLoader;
+import com.github.ceredira.utils.PackageInfoUtils;
 import com.github.ceredira.utils.Utils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,10 +16,6 @@ import java.util.List;
 public class PackageManager {
     private String rootFolder;
     private File rootFolderFile;
-
-    private final LocalPackageRepository localRepo = null;
-    private final RemotePackageRepository remoteRepo = null;
-    private final DependencyResolver dependencyResolver = null;
 
     public PackageManager(String rootFolder) {
         this.rootFolder = rootFolder;
@@ -65,7 +58,7 @@ public class PackageManager {
         String getPackageInfoMsg = MessageFormat.format("Получение информации по пакету {0}", packageName);
         log.info(getPackageInfoMsg);
 
-        PackageInfo packageInfo = PackageMetadataLoader.getPackageInfo(packageName);
+        PackageInfo packageInfo = PackageInfoUtils.getPackageInfo(packageName);
         return packageInfo;
     }
 

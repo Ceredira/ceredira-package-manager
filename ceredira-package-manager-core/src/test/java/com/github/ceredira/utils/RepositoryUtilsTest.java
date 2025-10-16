@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 @Slf4j
-class RepositoryManagerTest {
+class RepositoryUtilsTest {
 
     @BeforeAll
     public static void setUp() {
@@ -17,7 +17,7 @@ class RepositoryManagerTest {
 
     @Test
     void loadRepositories() {
-        RepositoriesConfig repositoriesConfig = RepositoryManager.loadRepositories("src/test/resources/repositories.yaml");
+        RepositoriesConfig repositoriesConfig = RepositoryUtils.loadRepositories("src/test/resources/repositories.yaml");
         assertNotNull(repositoriesConfig);
         assertNotNull(repositoriesConfig.getRepositories());
         assertFalse(repositoriesConfig.getRepositories().isEmpty());
@@ -27,9 +27,9 @@ class RepositoryManagerTest {
 
     @Test
     void saveRepositories() {
-        RepositoriesConfig repositoriesConfig = RepositoryManager.loadRepositories("src/test/resources/repositories.yaml");
-        repositoriesConfig.getRepositories().getFirst().setEnabled(false);
+        RepositoriesConfig repositoriesConfig = RepositoryUtils.loadRepositories("src/test/resources/repositories.yaml");
+        repositoriesConfig.getRepositories().get("origin").setEnabled(false);
 
-        RepositoryManager.saveRepositories("target/repositories.yaml", repositoriesConfig);
+        RepositoryUtils.saveRepositories("target/repositories.yaml", repositoriesConfig);
     }
 }
