@@ -15,7 +15,8 @@ public class YamlUtils {
             .enable(YAMLGenerator.Feature.MINIMIZE_QUOTES)
             .enable(YAMLGenerator.Feature.INDENT_ARRAYS_WITH_INDICATOR)
             .enable(YAMLGenerator.Feature.USE_PLATFORM_LINE_BREAKS))
-            .setPropertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE);;
+            .setPropertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE);
+    ;
 
     public static <T> T loadFromFile(File file, Class<T> clazz) {
         // Проверка входных параметров

@@ -1,12 +1,11 @@
 package com.github.ceredira.utils;
 
-import com.github.ceredira.model.RepositoriesConfig;
+import com.github.ceredira.model.Repository;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @Slf4j
 class RepositoryUtilsTest {
@@ -17,19 +16,17 @@ class RepositoryUtilsTest {
 
     @Test
     void loadRepositories() {
-        RepositoriesConfig repositoriesConfig = RepositoryUtils.loadRepositories("src/test/resources/repositories.yaml");
-        assertNotNull(repositoriesConfig);
-        assertNotNull(repositoriesConfig.getRepositories());
-        assertFalse(repositoriesConfig.getRepositories().isEmpty());
+        Repository repository = RepositoryUtils.loadRepository("src/test/resources/repositoryOrigin.yaml");
+        assertNotNull(repository);
 
-        log.info(repositoriesConfig.toString());
+        log.info(repository.toString());
     }
 
     @Test
     void saveRepositories() {
-        RepositoriesConfig repositoriesConfig = RepositoryUtils.loadRepositories("src/test/resources/repositories.yaml");
-        repositoriesConfig.getRepositories().get("origin").setEnabled(false);
+        Repository repository = RepositoryUtils.loadRepository("src/test/resources/repositoryOrigin.yaml");
+        repository.setEnabled(false);
 
-        RepositoryUtils.saveRepositories("target/repositories.yaml", repositoriesConfig);
+        RepositoryUtils.saveRepository("target/repositoryOrigin.yaml", repository);
     }
 }

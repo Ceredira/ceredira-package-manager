@@ -1,0 +1,7 @@
+name: origin
+description: Original Ceredira Package Manager repository
+url: https://example.com/repo.git
+type: remote
+enabled: true
+properties:
+  branch: main

@@ -1,0 +1,4 @@
+name: local
+description: local repo
+type: local
+enabled: true
