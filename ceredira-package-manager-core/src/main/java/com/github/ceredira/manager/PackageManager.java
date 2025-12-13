@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.text.MessageFormat;
 import java.util.List;
+import java.util.Set;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -39,8 +40,8 @@ public class PackageManager {
         throw new RuntimeException("Не реализовано");
     }
 
-    public List<CpmPackage> list(boolean localOnly) {
-        throw new RuntimeException("Не реализовано");
+    public Set<String> list(String repositoryName, boolean installed) {
+        return PackageRepository.getPackages(repositoryName);
     }
 
     public List<CpmPackage> search(String query) {
@@ -51,7 +52,7 @@ public class PackageManager {
         String getPackageInfoMsg = MessageFormat.format("Получение информации по пакету {0}", packageName);
         log.info(getPackageInfoMsg);
 
-        PackageInfo packageInfo = PackageRepository.getPackage("origin", packageName);
+        PackageInfo packageInfo = null; // PackageRepository.getPackage("origin", packageName);
         return packageInfo;
     }
 

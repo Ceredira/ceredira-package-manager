@@ -3,6 +3,7 @@ package com.github.ceredira.utils;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.fasterxml.jackson.dataformat.yaml.YAMLGenerator;
 
@@ -15,7 +16,8 @@ public class YamlUtils {
             .enable(YAMLGenerator.Feature.MINIMIZE_QUOTES)
             .enable(YAMLGenerator.Feature.INDENT_ARRAYS_WITH_INDICATOR)
             .enable(YAMLGenerator.Feature.USE_PLATFORM_LINE_BREAKS))
-            .setPropertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE);
+            .enable(SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS)
+            .setPropertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE)
     ;
 
     public static <T> T loadFromFile(File file, Class<T> clazz) {

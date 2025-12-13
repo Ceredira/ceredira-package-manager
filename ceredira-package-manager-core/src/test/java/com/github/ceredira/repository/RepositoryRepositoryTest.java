@@ -24,8 +24,8 @@ class RepositoryRepositoryTest {
         pm.init();
 
         File repositoryOriginYaml = new File("src/test/resources/repositoryOrigin.yaml");
-        File destFolder = new File(rootFolder, "var/cpm/origin/repository.yaml");
-        FileUtils.createFileWithContent(destFolder, repositoryOriginYaml);
+        File destinationFile = new File(rootFolder, "var/cpm/origin/repository.yaml");
+        FileUtils.createFileWithContent(destinationFile, repositoryOriginYaml);
     }
 
     @Test
