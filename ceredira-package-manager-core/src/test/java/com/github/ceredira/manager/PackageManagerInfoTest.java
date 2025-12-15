@@ -1,14 +1,18 @@
 package com.github.ceredira.manager;
 
+import com.github.ceredira.model.PackageInfo;
 import com.github.ceredira.utils.FileUtils;
 import com.github.ceredira.utils.TestUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.util.Set;
 
-public class PackageManagerListTest {
+@Slf4j
+class PackageManagerInfoTest {
+
     private static final String rootFolder = TestUtils.getTestFolder().getAbsolutePath();
 
     @BeforeAll
@@ -27,10 +31,14 @@ public class PackageManagerListTest {
     }
 
     @Test
-    public void list() {
+    public void getPackageInfo() {
         PackageManager pm = new PackageManager();
 
-        Set<String> packages = pm.list("origin", false);
-        System.out.println( "packages: " + packages);
+        Set<String> packageVariations = pm.info("everything");
+
+        log.info("Версии пакетов:");
+        for (String s : packageVariations) {
+            log.info("    {}", s);
+        }
     }
 }

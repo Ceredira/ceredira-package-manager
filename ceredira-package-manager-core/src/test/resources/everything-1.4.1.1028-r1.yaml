@@ -62,5 +62,5 @@ package_files:
     sha256: ${sha256}
   - file_name: everything-1.4.1.1028-r1.cpmm.7z
     sha256: ${sha256}
-  - file_name: everything-1.4.1.1028-r1.cpmd
+  - file_name: everything-1.4.1.1028-r1.yaml
     sha256: ${sha256}

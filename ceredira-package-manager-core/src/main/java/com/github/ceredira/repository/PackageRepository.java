@@ -7,6 +7,7 @@ import lombok.Getter;
 
 import java.io.File;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -49,7 +50,39 @@ public class PackageRepository {
         return revisions.keySet();
     }
 
-    public static PackageInfo getPackage(String repositoryName, String packageName, String version, String revision) {
+    // ToDo: изменить возвращаемый тип, возвращать мапу с именем репозитория и пакетами из него
+    public static Set<String> getPackageInfo(String packageName) {
+        // ToDo: сделать поиск по всем репозиториям
+        String repositoryName = "origin";
+
+        // ToDo: добавить проверку наличия репозитория и наличия пакета в нем
+        RepositoryPackage repositoryPackage = indexes.get(repositoryName).getPackages().get(packageName);
+
+        Set<String> packageNames =  new HashSet<>();
+
+
+        Map<String, PackageVersion> versions = repositoryPackage.getVersions();
+        for (Map.Entry<String, PackageVersion> version : versions.entrySet()) {
+            String versionName = version.getKey();
+
+            Map<String, PackageRevision> revisions = version.getValue().getRevisions();
+            for (String revisionName : revisions.keySet()) {
+                String fullPackageName = String.format("%s-%s-%s",
+                        packageName,
+                        versionName,
+                        revisionName);
+                packageNames.add(fullPackageName);
+            }
+        }
+
+        return packageNames;
+    }
+
+    public static PackageInfo getPackageInfo(String packageName, String version, String revision) {
+        // ToDo: сделать поиск по всем репозиториям
+        String repositoryName = "origin";
+
+        // ToDo: проверить потом контрольную сумму
         String sha26 = indexes.get(repositoryName).getPackages().get(packageName)
                 .getVersions().get(version)
                 .getRevisions().get(revision).getSha26();

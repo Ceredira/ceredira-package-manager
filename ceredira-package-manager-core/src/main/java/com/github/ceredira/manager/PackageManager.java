@@ -48,12 +48,12 @@ public class PackageManager {
         throw new RuntimeException("Не реализовано");
     }
 
-    public PackageInfo info(String packageName) {
+    public Set<String> info(String packageName) {
         String getPackageInfoMsg = MessageFormat.format("Получение информации по пакету {0}", packageName);
         log.info(getPackageInfoMsg);
 
-        PackageInfo packageInfo = null; // PackageRepository.getPackage("origin", packageName);
-        return packageInfo;
+        Set<String> packageVariations = PackageRepository.getPackageInfo(packageName);
+        return packageVariations;
     }
 
     public List<CpmPackage> outdated() {
