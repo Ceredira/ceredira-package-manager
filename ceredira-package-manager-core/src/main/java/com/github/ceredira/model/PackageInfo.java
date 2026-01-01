@@ -4,6 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -12,13 +14,13 @@ import java.util.Map;
 @AllArgsConstructor
 public class PackageInfo {
     private String schemaVersion;
-    private List<String> arch;
-    private List<String> os;
-    private Map<String, List<String>> category;
+    private List<String> arch = new ArrayList<>();
+    private List<String> os = new ArrayList<>();
+    private Map<String, List<String>> category = new HashMap<>();
     private CpmPackage cpmPackage;
     private OriginalPackage originalPackage;
-    private List<String> dependencies;
-    private List<String> files;
-    private List<String> metaFiles;
-    private List<PackageFile> packageFiles;
+    private List<String> dependencies = new ArrayList<>();
+    private List<String> files = new ArrayList<>();
+    private List<String> metaFiles = new ArrayList<>();
+    private List<PackageFile> packageFiles = new ArrayList<>();
 }

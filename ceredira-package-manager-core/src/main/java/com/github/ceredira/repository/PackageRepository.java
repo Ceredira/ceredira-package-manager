@@ -85,7 +85,7 @@ public class PackageRepository {
         // ToDo: проверить потом контрольную сумму
         String sha26 = indexes.get(repositoryName).getPackages().get(packageName)
                 .getVersions().get(version)
-                .getRevisions().get(revision).getSha26();
+                .getRevisions().get(revision).getSha256();
 
         File root = Config.getFileFromRoot("var/cpm");
 
