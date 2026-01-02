@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.HashMap;
 import java.util.Map;
 
 @Data
@@ -17,5 +18,5 @@ public class OriginalPackage {
     private String downloadFileName;
     private String author;
     private String website;
-    private Map<String, String> changelog;
+    private Map<String, String> changelog = new HashMap<>();
 }
