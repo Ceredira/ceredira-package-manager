@@ -3,7 +3,10 @@ package com.github.ceredira.config;
 import lombok.Setter;
 
 import java.io.File;
+import java.nio.file.Path;
 
+// ToDo нужно обсудить: стоит ли getRootPath() оставлять File?
+//  Такой подход добавляет преобразования в Path и обратно в File
 public class Config {
     @Setter
     private static File rootPath;
@@ -16,8 +19,8 @@ public class Config {
         return rootPath;
     }
 
-    public static String getRootPathString() {
-        return getRootPath().getPath();
+    public static Path getRootPathAsPath() {
+        return getRootPath().toPath();
     }
 
     public static File getFileFromRoot(String path) {
