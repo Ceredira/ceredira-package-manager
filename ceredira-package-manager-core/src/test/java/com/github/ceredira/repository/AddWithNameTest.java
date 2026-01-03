@@ -1,5 +1,6 @@
 package com.github.ceredira.repository;
 
+import com.github.ceredira.BaseTest;
 import com.github.ceredira.manager.RepositoryManager;
 import com.github.ceredira.model.Repository;
 import org.junit.jupiter.api.BeforeEach;
@@ -8,13 +9,11 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import java.nio.file.Path;
 import java.util.stream.Stream;
 
-import static com.github.ceredira.utils.TestUtils.getTestFolder;
 import static org.junit.jupiter.api.Assertions.*;
 
-public class AddWithNameTest {
+public class AddWithNameTest extends BaseTest {
     static String emptyString = "";
     static String emptyStringWithSpace = "   ";
     static String emptyStringWithLineBreak = "\t\n";
@@ -33,8 +32,7 @@ public class AddWithNameTest {
 
     @BeforeEach
     void setUp() {
-        Path root = getTestFolder().toPath();
-        manager = new RepositoryManager(root);
+        manager = new RepositoryManager();
     }
 
     @Test

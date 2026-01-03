@@ -1,5 +1,6 @@
 package com.github.ceredira.repository;
 
+import com.github.ceredira.BaseTest;
 import com.github.ceredira.manager.RepositoryManager;
 import com.github.ceredira.model.Repository;
 import org.junit.jupiter.api.BeforeEach;
@@ -8,6 +9,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import java.net.URI;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -15,8 +17,11 @@ import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class AddAllParametersTest {
+public class AddAllParametersTest extends BaseTest {
     private RepositoryManager manager;
+    URI url = URI.create("https://example.com/my-repo.git");
+    URI url1 = URI.create("https://old-url.com/my-repo.git");
+    URI url2 = URI.create("https://new-url.com/my-repo.git");
 
     static Stream<Arguments> provideEmptyOrNullOriginalOptions() {
         return Stream.of(
@@ -42,12 +47,11 @@ public class AddAllParametersTest {
     @Test
     void shouldAddRepositoryWithNameUrlAndOptions() {
         String name = "my-repo";
-        String url = "https://example.com/my-repo.git";
         Map<String, String> options = new HashMap<>();
         options.put("branch", "main");
         options.put("depth", "1");
 
-        manager.addRepository(name, url, options);
+        manager.addRepository(name, String.valueOf(url), options);
 
         assertEquals(1, manager.getRepositories().size());
         assertTrue(manager.getRepositories().containsKey(name));
@@ -63,9 +67,8 @@ public class AddAllParametersTest {
     @MethodSource("provideEmptyOrNullOriginalOptions")
     void shouldAddRepositoryWithEmptyOrNullOriginalOptions(Map<String, String> options) {
         String name = "repo-options-test";
-        String url = "https://example.com/repo.git";
 
-        manager.addRepository(name, url, options);
+        manager.addRepository(name, String.valueOf(url), options);
 
         assertTrue(manager.getRepositories().containsKey(name));
 
@@ -82,10 +85,9 @@ public class AddAllParametersTest {
     @Test
     void shouldAddRepositoryWithEmptyOptions() {
         String name = "repo-empty-options";
-        String url = "https://example.com/repo2.git";
         Map<String, String> emptyOptions = new HashMap<>();
 
-        manager.addRepository(name, url, emptyOptions);
+        manager.addRepository(name, String.valueOf(url), emptyOptions);
 
         assertTrue(manager.getRepositories().containsKey(name));
 
@@ -99,10 +101,9 @@ public class AddAllParametersTest {
     @Test
     void shouldAddRepositoryWithEmptyEntriesInOptions() {
         String name = "repo-weird-options";
-        String url = "https://example.com/repo.git";
         Map<String, String> options = Map.of("", "");
 
-        manager.addRepository(name, url, options);
+        manager.addRepository(name, String.valueOf(url), options);
 
         Repository repo = manager.getRepositories().get(name);
         assertNotNull(repo.getProperties());
@@ -114,13 +115,11 @@ public class AddAllParametersTest {
         // ToDo предусмотреть ошибку типа "Такой репозиторий уже существует"
     void shouldReplaceRepositoryWhenSameNameUsed() {
         String name = "duplicate";
-        String url1 = "https://old.url/repo.git";
-        String url2 = "https://new.url/repo.git";
         Map<String, String> opts1 = Map.of("v", "1");
         Map<String, String> opts2 = Map.of("v", "2");
 
-        manager.addRepository(name, url1, opts1);
-        manager.addRepository(name, url2, opts2);
+        manager.addRepository(name, String.valueOf(url1), opts1);
+        manager.addRepository(name, String.valueOf(url2), opts2);
 
         assertEquals(1, manager.getRepositories().size());
 
@@ -142,10 +141,9 @@ public class AddAllParametersTest {
     @ParameterizedTest
     @MethodSource("provideValidNames")
     void shouldAddRepositoryWithVariousValidNames(String inputName) {
-        String url = "https://example.com/repo.git";
         Map<String, String> options = Map.of("branch", "main");
 
-        manager.addRepository(inputName, url, options);
+        manager.addRepository(inputName, String.valueOf(url), options);
 
         String expectedName = inputName.trim();
 

@@ -1,5 +1,6 @@
 package com.github.ceredira.repository;
 
+import com.github.ceredira.BaseTest;
 import com.github.ceredira.manager.RepositoryManager;
 import com.github.ceredira.model.Repository;
 import org.junit.jupiter.api.BeforeEach;
@@ -8,19 +9,39 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import java.net.URI;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class AddWithNameAndUrlTest {
+public class AddWithNameAndUrlTest extends BaseTest {
     private RepositoryManager manager;
+    private final URI url = URI.create("https://example.com/my-repo.git");
+    private final URI url1 = URI.create("https://old-url.com/my-repo.git");
+    private final URI url2 = URI.create("https://new-url.com/my-repo.git");
 
     static Stream<Arguments> provideEmptyOrBlankUrls() {
         return Stream.of(
-                Arguments.of((String) null),
-                Arguments.of(""),
-                Arguments.of("   "),
-                Arguments.of("\t\n")
+                Arguments.of((URI) null)
+        );
+    }
+
+    static Stream<Arguments> provideIncorrectUrls() {
+        return Stream.of(
+                Arguments.of("null"),
+                Arguments.of("mailto:null"),
+                Arguments.of("mailto:test@example.com"),
+                Arguments.of("123"),
+                Arguments.of("http://"),
+                Arguments.of("https://"),
+                Arguments.of("ftp://"),
+                Arguments.of("//example.com"),
+                Arguments.of("://example.com"),
+                Arguments.of("javascript:alert(1)"),
+                Arguments.of("file:///etc/passwd"),
+                Arguments.of("http://example.com/path with spaces"),
+                Arguments.of(" ")
+
         );
     }
 
@@ -41,9 +62,8 @@ public class AddWithNameAndUrlTest {
     @Test
     void shouldAddRepositoryWithNameAndUrl() {
         String name = "repo1";
-        String url = "https://example.com/repo1.git";
 
-        manager.addRepository(name, url);
+        manager.addRepository(name, String.valueOf(url));
 
         assertEquals(1, manager.getRepositories().size());
         assertTrue(manager.getRepositories().containsKey(name));
@@ -54,62 +74,70 @@ public class AddWithNameAndUrlTest {
         assertEquals(url, repo.getUrl());
     }
 
-    // ToDo Строка, но она не пройдет внутри
-    //  конструктора валидность по регулярному выражению на url поле.
-    //  Может быть, стоит даже проверить 200 Ok
-    @Test
-    void shouldAddRepositoryWithNullUrl() {
-        String name = "repo2";
+    @ParameterizedTest
+    @MethodSource("provideEmptyOrBlankUrls")
+    void shouldAddRepositoryWithEmptyOrBlankUrl(String emptyUrl) {
+        String name = "repo3";
 
-        manager.addRepository(name, "null");
-        // manager.addRepository(name, (String) null); - Тоже предусмотреть
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> manager.addRepository(name, emptyUrl)
+        );
 
-        assertTrue(manager.getRepositories().containsKey(name));
-
-        Repository repo = manager.getRepositories().get(name);
-        assertNotNull(repo);
-        assertEquals(name, repo.getName());
-        assertEquals("null", repo.getUrl());
+        assertEquals("URL cannot be null", exception.getMessage()
+        );
     }
 
     @ParameterizedTest
-    @MethodSource("provideEmptyOrBlankUrls")
-    void shouldAddRepositoryWithEmptyOrBlankUrl(String url) {
+    @MethodSource("provideIncorrectUrls")
+    void shouldAddRepositoryWithIncorrectUrl(String invalidUrl) {
         String name = "repo3";
 
-        manager.addRepository(name, url);
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> manager.addRepository(name, invalidUrl)
+        );
 
-        assertTrue(manager.getRepositories().containsKey(name));
+        assertTrue(
+                exception.getMessage().startsWith("Invalid URL format: "),
+                "Expected 'Invalid URL format: ...', but got: " + exception.getMessage()
+        );
+    }
 
-        Repository repo = manager.getRepositories().get(name);
-        assertNotNull(repo);
-        assertEquals(name, repo.getName());
-        assertEquals(url, repo.getUrl()); // сохраняется как есть
+    @Test
+    void addRepositoryWithCouldNotBeParsedAsUrl() {
+        String name = "repo3";
+        String invalidUrl = "http://example.com/path[file]";
+
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> manager.addRepository(name, invalidUrl)
+        );
+
+        assertEquals("String could not be parsed as URI: " + invalidUrl, exception.getMessage()
+        );
     }
 
     @Test
     void shouldReplaceExistingRepositoryWhenSameNameUsedWithUrl() {
         String name = "common-repo";
-        String url1 = "https://old.url/repo.git";
-        String url2 = "https://new.url/repo.git";
 
-        manager.addRepository(name, url1);
+        manager.addRepository(name, String.valueOf(url1));
 
-        manager.addRepository(name, url2);
+        manager.addRepository(name, String.valueOf(url2));
 
         assertEquals(1, manager.getRepositories().size());
 
         Repository repo = manager.getRepositories().get(name);
         assertEquals(name, repo.getName());
-        assertEquals(url2, repo.getUrl());
+        assertEquals(url2, repo.getUrl().toString());
     }
 
     @ParameterizedTest
     @MethodSource("provideEmptyOrBlankNames")
     void shouldAddRepositoryWithEmptyOrBlankName(String inputName) {
-        String url = "https://example.com/repo.git  ";
 
-        manager.addRepository(inputName, url);
+        manager.addRepository(inputName, String.valueOf(url));
 
         String expectedName = inputName.trim();
 

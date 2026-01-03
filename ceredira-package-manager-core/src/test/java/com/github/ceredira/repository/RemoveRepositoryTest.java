@@ -1,24 +1,21 @@
 package com.github.ceredira.repository;
 
+import com.github.ceredira.BaseTest;
 import com.github.ceredira.manager.RepositoryManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.nio.file.Path;
-
-import static com.github.ceredira.utils.TestUtils.getTestFolder;
 import static org.junit.jupiter.api.Assertions.*;
 
-public class RemoveRepositoryTest {
+public class RemoveRepositoryTest extends BaseTest {
     private RepositoryManager manager;
 
     @BeforeEach
     void setUp() {
-        Path root = getTestFolder().toPath();
-        manager = new RepositoryManager(root);
+        manager = new RepositoryManager();
+
         manager.addRepository("repo1", "https://example.com/repo1.git");
         manager.addRepository("repo2", "https://example.com/repo2.git");
-        manager.addRepository("", "https://example.com/empty-name.git");
     }
 
     @Test
@@ -27,7 +24,7 @@ public class RemoveRepositoryTest {
 
         assertFalse(manager.getRepositories().containsKey("repo1"));
         assertTrue(manager.getRepositories().containsKey("repo2"));
-        assertEquals(2, manager.getRepositories().size());
+        assertEquals(1, manager.getRepositories().size());
     }
 
     @Test
@@ -36,7 +33,7 @@ public class RemoveRepositoryTest {
 
         assertTrue(manager.getRepositories().containsKey("repo1"));
         assertTrue(manager.getRepositories().containsKey("repo2"));
-        assertEquals(3, manager.getRepositories().size());
+        assertEquals(2, manager.getRepositories().size());
     }
 
     @Test
@@ -56,6 +53,6 @@ public class RemoveRepositoryTest {
         assertEquals(initialSize, manager.getRepositories().size());
         assertTrue(manager.getRepositories().containsKey("repo1"));
         assertTrue(manager.getRepositories().containsKey("repo2"));
-        assertTrue(manager.getRepositories().containsKey(""));
+        // assertTrue(manager.getRepositories().containsKey(""));
     }
 }

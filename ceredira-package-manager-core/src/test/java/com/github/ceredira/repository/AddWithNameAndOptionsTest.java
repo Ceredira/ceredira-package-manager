@@ -1,5 +1,6 @@
 package com.github.ceredira.repository;
 
+import com.github.ceredira.BaseTest;
 import com.github.ceredira.manager.RepositoryManager;
 import com.github.ceredira.model.Repository;
 import org.junit.jupiter.api.BeforeEach;
@@ -15,7 +16,7 @@ import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class AddWithNameAndOptionsTest {
+public class AddWithNameAndOptionsTest extends BaseTest {
     private RepositoryManager manager;
 
     static Stream<Arguments> invalidNames() {
@@ -56,21 +57,6 @@ public class AddWithNameAndOptionsTest {
         assertEquals(name, repo.getName());
         assertEquals(options, repo.getProperties());
         assertNotSame(options, repo.getProperties()); // проверяем, что была создана копия
-    }
-
-    @Test
-    void shouldAddRepositoryWithEmptyOptionsWhenNullProvided() {
-        String name = "repo2";
-
-        manager.addRepository(name, "null");
-
-        assertTrue(manager.getRepositories().containsKey(name));
-
-        Repository repo = manager.getRepositories().get(name);
-        assertNotNull(repo);
-        assertEquals(name, repo.getName());
-        assertNotNull(repo.getProperties());
-        assertTrue(repo.getProperties().isEmpty());
     }
 
     @Test
