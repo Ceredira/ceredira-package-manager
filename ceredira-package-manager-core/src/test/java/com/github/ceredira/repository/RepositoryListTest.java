@@ -1,0 +1,69 @@
+package com.github.ceredira.repository;
+
+import com.github.ceredira.manager.RepositoryManager;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import java.nio.file.Path;
+import java.util.Set;
+
+import static com.github.ceredira.utils.TestUtils.getTestFolder;
+import static org.junit.jupiter.api.Assertions.*;
+
+public class RepositoryListTest {
+    private RepositoryManager manager;
+
+    @BeforeEach
+    void setUp() {
+        Path root = getTestFolder().toPath();
+        manager = new RepositoryManager(root);
+        manager.addRepository("repo1", "https://example.com/repo1.git");
+        manager.addRepository("repo2", "https://example.com/repo2.git");
+        manager.addRepository("", "https://example.com/empty.git"); // пустое имя допустимо
+    }
+
+    @Test
+    void shouldReturnAllRepositoryNamesAsSet() {
+        Set<String> names = manager.list();
+        assertNotNull(names);
+        assertEquals(3, names.size());
+        assertTrue(names.contains("repo1"));
+        assertTrue(names.contains("repo2"));
+        assertTrue(names.contains(""));
+    }
+
+    @Test
+    void shouldReturnEmptySetWhenNoRepositories() {
+        RepositoryManager emptyManager = new RepositoryManager();
+
+        Set<String> names = emptyManager.list();
+
+        assertNotNull(names);
+        assertTrue(names.isEmpty());
+    }
+
+    @Test
+    void shouldReflectChangesInUnderlyingMap() {
+
+        Set<String> names = manager.list();
+
+        manager.removeRepository("repo1");
+
+        assertEquals(2, names.size());
+        assertFalse(names.contains("repo1"));
+    }
+
+    // Опционально: если вы хотите защитить от модификации извне,
+    // то этот тест покажет, что текущая реализация НЕ защищена:
+    @Test
+    void shouldAllowExternalModificationOfKeySet() {
+        Set<String> names = manager.list();
+
+        // Это упадёт с UnsupportedOperationException, если keySet() не поддерживает remove,
+        // но у обычного HashMap — поддерживает!
+        assertDoesNotThrow(() -> names.remove("repo1"));
+
+        // После этого менеджер потерял репозиторий!
+        assertFalse(manager.getRepositories().containsKey("repo1"));
+    }
+}
