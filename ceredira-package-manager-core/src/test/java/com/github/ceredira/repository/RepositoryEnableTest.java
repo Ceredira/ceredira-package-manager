@@ -1,5 +1,6 @@
 package com.github.ceredira.repository;
 
+import com.github.ceredira.BaseTest;
 import com.github.ceredira.manager.RepositoryManager;
 import com.github.ceredira.model.Repository;
 import org.junit.jupiter.api.BeforeEach;
@@ -7,7 +8,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class RepositoryEnableTest {
+public class RepositoryEnableTest extends BaseTest {
     private RepositoryManager manager;
 
     @BeforeEach

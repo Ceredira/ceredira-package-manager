@@ -62,22 +62,22 @@ public class RepositoryManager {
         log.info("Локальный репозиторий {} добавлен", repositoryName);
     }
 
-    public void addRepository(String name, Map<String, String> options) {
-        Repository repository = new Repository(name, options);
+    public void addRepository(String repositoryName, Map<String, String> repositoryOptions) {
+        Repository repository = new Repository(repositoryName, repositoryOptions);
 
         repositories.put(repository.getName(), repository);
         syncWithFilesystem(repository);
 
-        log.info("Локальный репозиторий {} добавлен", name);
+        log.info("Локальный репозиторий {} добавлен", repositoryName);
     }
 
-    public void addRepository(String name, String url) {
-        Repository repository = new Repository(name, url);
+    public void addRepository(String repositoryName, String remoteRepositoryUrl) {
+        Repository repository = new Repository(repositoryName, remoteRepositoryUrl);
 
         repositories.put(repository.getName(), repository);
         syncWithFilesystem(repository);
 
-        log.info("Удаленный репозиторий {} по адресу {} добавлен", name, url);
+        log.info("Удаленный репозиторий {} по адресу {} добавлен", repositoryName, remoteRepositoryUrl);
     }
 
     public void addRepository(String repositoryName, String remoteRepositoryUrl, Map<String, String> repositoryOptions) {
@@ -95,6 +95,11 @@ public class RepositoryManager {
         }
 
         Repository repository = repositories.get(repositoryName);
+
+        if (repository == null) {
+            log.warn("Репозиторий {} не найден. Удаление невозможно.", repositoryName);
+            return;
+        }
 
         Path repositoryRoot = root.resolve(repository.getName());
         deleteFolderWithContent(repositoryRoot);
