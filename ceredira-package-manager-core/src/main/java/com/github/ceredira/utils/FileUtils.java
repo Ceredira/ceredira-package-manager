@@ -4,6 +4,8 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -103,5 +105,21 @@ public class FileUtils {
             log.error(fileCreationError);
             throw new RuntimeException(fileCreationError);
         }
+    }
+
+    public static String getFileContentAsString(File destination) {
+        String result;
+        result = getFileContentAsString(destination, StandardCharsets.UTF_8);
+        return result;
+    }
+
+    public static String getFileContentAsString(File destination, Charset cs) {
+        String result;
+        try {
+            result = Files.readString(destination.toPath(), cs);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        return result;
     }
 }

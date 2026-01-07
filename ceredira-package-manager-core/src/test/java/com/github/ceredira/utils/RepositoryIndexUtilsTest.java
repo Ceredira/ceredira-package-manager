@@ -1,17 +1,18 @@
 package com.github.ceredira.utils;
 
-import com.github.ceredira.model.*;
+import com.github.ceredira.BaseTest;
+import com.github.ceredira.model.PackageRevision;
+import com.github.ceredira.model.PackageVersion;
+import com.github.ceredira.model.RepositoryIndex;
+import com.github.ceredira.model.RepositoryPackage;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import java.util.HashMap;
-import java.util.List;
-
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @Slf4j
-class RepositoryIndexUtilsTest {
+class RepositoryIndexUtilsTest extends BaseTest {
 
     @BeforeAll
     public static void setUp() {

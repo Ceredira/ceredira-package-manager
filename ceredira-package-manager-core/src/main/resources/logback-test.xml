@@ -1,0 +1,22 @@
+<configuration>
+    <!-- 1. Отключаем служебные сообщения самого Logback (те самые INFO строки) -->
+    <statusListener class="ch.qos.logback.core.status.NopStatusListener" />
+
+    <!-- 2. Настраиваем вывод в консоль -->
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <!-- Чистый формат: Время, Уровень, Сообщение -->
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- 3. Уровень логирования для вашего приложения -->
+    <!-- Смените на WARN, если хотите видеть только ошибки -->
+    <root level="WARN">
+        <appender-ref ref="STDOUT" />
+    </root>
+
+    <!-- 4. Можно точечно отключить шум от тяжелых библиотек (например, Jackson или Hibernate) -->
+    <logger name="com.fasterxml.jackson" level="WARN"/>
+    <logger name="org.yaml.snakeyaml" level="WARN"/>
+</configuration>
