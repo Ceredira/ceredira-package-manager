@@ -1,12 +1,11 @@
 package com.github.ceredira;
 
 import com.github.ceredira.config.Config;
-import com.github.ceredira.utils.FolderUtils;
+import com.github.ceredira.utils.TestUtils;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.TestInfo;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -39,6 +38,11 @@ public abstract class BaseTest {
 
     @BeforeEach
     void setupClassName() {
-        Config.setRootPath(this.classRootPath.toFile());
+
+        // Получаем путь для текущего класса
+        classRootPath = TestUtils.getClassPath(this.getClass());
+
+        // Синхронизируем глобальный конфиг
+        Config.setRootPath(classRootPath.toFile());
     }
 }

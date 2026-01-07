@@ -130,7 +130,7 @@ public class AddWithNameAndUrlTest extends BaseTest {
 
         Repository repo = manager.getRepositories().get(name);
         assertEquals(name, repo.getName());
-        assertEquals(url2, repo.getUrl().toString());
+        assertEquals(url2, repo.getUrl());
     }
 
     @ParameterizedTest
