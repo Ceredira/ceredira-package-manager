@@ -4,6 +4,8 @@ import com.github.ceredira.BaseTest;
 import com.github.ceredira.manager.RepositoryManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -15,7 +17,6 @@ public class RepositoryInfoTest extends BaseTest {
         manager = new RepositoryManager();
         manager.addRepository("repo1", "https://example.com/repo1.git");
         manager.addRepository("repo2", "https://example.com/repo2.git");
-        manager.addRepository("", "https://example.com/empty.git"); // пустое имя допустимо
     }
 
     @Test
@@ -27,14 +28,14 @@ public class RepositoryInfoTest extends BaseTest {
         assertTrue(info.contains("https://example.com/repo1.git"));
     }
 
-    @Test
-    void shouldReturnInfoForRepositoryWithEmptyName() {
-        String info = manager.info("");
+    @ParameterizedTest
+    @MethodSource("provideEmptyOrBlankNames")
+    void shouldReturnInfoForRepositoryWithEmptyName(String invalidName) {
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            manager.info(invalidName);
+        });
 
-        assertNotNull(info);
-        assertTrue(info.contains("https://example.com/empty.git"));
-
-        assertTrue(info.contains("name=''") || info.contains("name=\"\"") || info.contains("name=,"));
+        assertEquals("Имя репозитория не может быть null или пустым", exception.getMessage());
     }
 
     @Test
@@ -44,7 +45,7 @@ public class RepositoryInfoTest extends BaseTest {
                 () -> manager.info("non-existent")
         );
 
-        assertEquals("Repository with name 'non-existent' not found", exception.getMessage());
+        assertEquals("Репозиторий 'non-existent' не найден. Операция невозможна.", exception.getMessage());
     }
 
     @Test
@@ -52,9 +53,9 @@ public class RepositoryInfoTest extends BaseTest {
 
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
-                () -> manager.info(null)
+                () -> manager.info("null") // строка
         );
 
-        assertEquals("Repository with name 'null' not found", exception.getMessage());
+        assertEquals("Репозиторий 'null' не найден. Операция невозможна.", exception.getMessage());
     }
 }

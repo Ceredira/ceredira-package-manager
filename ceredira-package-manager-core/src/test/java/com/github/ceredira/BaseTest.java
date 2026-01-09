@@ -5,12 +5,14 @@ import com.github.ceredira.utils.TestUtils;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.TestInfo;
+import org.junit.jupiter.params.provider.Arguments;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.stream.Stream;
 
 public abstract class BaseTest {
     protected static Path classRootPath;
@@ -44,5 +46,16 @@ public abstract class BaseTest {
 
         // Синхронизируем глобальный конфиг
         Config.setRootPath(classRootPath.toFile());
+    }
+
+    // тестовые данные для пустого имени репозитория
+    static Stream<Arguments> provideEmptyOrBlankNames() {
+        return Stream.of(
+                Arguments.of((Object) null),
+                Arguments.of(""),
+                Arguments.of("   "),
+                Arguments.of("\t\n"),
+                Arguments.of(" \r\n  ")
+        );
     }
 }

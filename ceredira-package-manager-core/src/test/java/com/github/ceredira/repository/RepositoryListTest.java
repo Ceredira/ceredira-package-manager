@@ -5,7 +5,6 @@ import com.github.ceredira.manager.RepositoryManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.io.IOException;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -14,22 +13,20 @@ public class RepositoryListTest extends BaseTest {
     private RepositoryManager manager;
 
     @BeforeEach
-    void setUp() throws IOException {
+    void setUp() {
         manager = new RepositoryManager();
 
         manager.addRepository("repo1", "https://example.com/repo1.git");
         manager.addRepository("repo2", "https://example.com/repo2.git");
-        manager.addRepository("", "https://example.com/empty.git"); // пустое имя допустимо
     }
 
     @Test
     void shouldReturnAllRepositoryNamesAsSet() {
         Set<String> names = manager.list();
         assertNotNull(names);
-        assertEquals(3, names.size());
+        assertEquals(2, names.size());
         assertTrue(names.contains("repo1"));
         assertTrue(names.contains("repo2"));
-        assertTrue(names.contains(""));
     }
 
     @Test
@@ -49,7 +46,7 @@ public class RepositoryListTest extends BaseTest {
 
         manager.removeRepository("repo1");
 
-        assertEquals(2, names.size());
+        assertEquals(1, names.size());
         assertFalse(names.contains("repo1"));
     }
 

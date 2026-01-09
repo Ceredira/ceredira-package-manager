@@ -4,6 +4,8 @@ import com.github.ceredira.BaseTest;
 import com.github.ceredira.manager.RepositoryManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -29,30 +31,30 @@ public class RemoveRepositoryTest extends BaseTest {
 
     @Test
     void shouldDoNothingWhenRemovingNonExistentRepository() {
-        manager.removeRepository("non-existent");
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            manager.removeRepository("non-existent");
+        });
 
-        assertTrue(manager.getRepositories().containsKey("repo1"));
-        assertTrue(manager.getRepositories().containsKey("repo2"));
-        assertEquals(2, manager.getRepositories().size());
+        assertAll("Grouped Assertions of Repository State",
+                () -> assertEquals("Репозиторий 'non-existent' не найден. Операция невозможна.", exception.getMessage()),
+                () -> assertTrue(manager.getRepositories().containsKey("repo1")),
+                () -> assertTrue(manager.getRepositories().containsKey("repo2")),
+                () -> assertEquals(2, manager.getRepositories().size())
+        );
     }
 
-    @Test
-    void shouldRemoveRepositoryWithEmptyName() {
-        manager.removeRepository("");
+    @ParameterizedTest
+    @MethodSource("provideEmptyOrBlankNames")
+    void shouldRemoveRepositoryWithEmptyName(String inputName) {
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            manager.removeRepository(inputName);
+        });
 
-        assertFalse(manager.getRepositories().containsKey(""));
-        assertEquals(2, manager.getRepositories().size());
-    }
-
-    @Test
-    void shouldDoNothingWhenRepositoryNameIsNull() {
-        int initialSize = manager.getRepositories().size();
-
-        manager.removeRepository(null); // не должно упасть и не должно изменить мапу
-
-        assertEquals(initialSize, manager.getRepositories().size());
-        assertTrue(manager.getRepositories().containsKey("repo1"));
-        assertTrue(manager.getRepositories().containsKey("repo2"));
-        // assertTrue(manager.getRepositories().containsKey(""));
+        assertAll("Grouped Assertions of Repository State",
+                () -> assertEquals("Имя репозитория не может быть null или пустым", exception.getMessage()),
+                () -> assertTrue(manager.getRepositories().containsKey("repo1")),
+                () -> assertTrue(manager.getRepositories().containsKey("repo2")),
+                () -> assertEquals(2, manager.getRepositories().size())
+        );
     }
 }

@@ -45,15 +45,6 @@ public class AddWithNameAndUrlTest extends BaseTest {
         );
     }
 
-    static Stream<Arguments> provideEmptyOrBlankNames() {
-        return Stream.of(
-                Arguments.of(""),
-                Arguments.of("   "),
-                Arguments.of("\t\n"),
-                Arguments.of(" \r\n  ")
-        );
-    }
-
     @BeforeEach
     void setUp() {
         manager = new RepositoryManager();
@@ -135,29 +126,13 @@ public class AddWithNameAndUrlTest extends BaseTest {
 
     @ParameterizedTest
     @MethodSource("provideEmptyOrBlankNames")
-    void shouldAddRepositoryWithEmptyOrBlankName(String inputName) {
-
-        manager.addRepository(inputName, String.valueOf(url));
-
-        String expectedName = inputName.trim();
-
-        assertTrue(manager.getRepositories().containsKey(expectedName));
-
-        Repository repo = manager.getRepositories().get(expectedName);
-        assertNotNull(repo);
-        assertEquals(expectedName, repo.getName()); // имя именно после trim()
-        assertEquals(url, repo.getUrl());            // URL сохраняется как есть
-    }
-
-    @Test
-    void shouldThrowIllegalArgumentExceptionWhenNameIsNull() {
-        String url = "https://example.com/repo.git  ";
+    void shouldNotAddRepositoryWithEmptyOrBlankName(String inputName) {
 
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
-                () -> manager.addRepository(null, url)
+                () -> manager.addRepository(inputName, String.valueOf(url))
         );
 
-        assertEquals("Repository name must not be null", exception.getMessage());
+        assertEquals("Repository name must not be null or blank", exception.getMessage());
     }
 }

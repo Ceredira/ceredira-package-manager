@@ -31,14 +31,6 @@ public class AddAllParametersTest extends BaseTest {
         );
     }
 
-    static Stream<Arguments> provideValidNames() {
-        return Stream.of(
-                Arguments.of(""),
-                Arguments.of("   "),
-                Arguments.of("\t\n")
-        );
-    }
-
     @BeforeEach
     void setUp() {
         manager = new RepositoryManager();
@@ -128,32 +120,14 @@ public class AddAllParametersTest extends BaseTest {
         assertEquals(opts2, repo.getProperties());
     }
 
-    @Test
-    void shouldThrowWhenNameIsNull() {
+    @ParameterizedTest
+    @MethodSource("provideEmptyOrBlankNames")
+    void shouldThrowWhenNameIsNull(String inputName) {
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
-                () -> manager.addRepository(null, null, null)
+                () -> manager.addRepository(inputName, null, null)
         );
 
-        assertEquals("Repository name must not be null", exception.getMessage());
-    }
-
-    @ParameterizedTest
-    @MethodSource("provideValidNames")
-    void shouldAddRepositoryWithVariousValidNames(String inputName) {
-        Map<String, String> options = Map.of("branch", "main");
-
-        manager.addRepository(inputName, String.valueOf(url), options);
-
-        String expectedName = inputName.trim();
-
-        assertTrue(manager.getRepositories().containsKey(expectedName));
-
-        Repository repo = manager.getRepositories().get(expectedName);
-        assertNotNull(repo);
-        assertEquals(expectedName, repo.getName());
-        assertEquals(url, repo.getUrl());
-        assertEquals(options, repo.getProperties());
-        assertNotSame(options, repo.getProperties()); // убедимся, что мапа скопирована
+        assertEquals("Repository name must not be null or blank", exception.getMessage());
     }
 }
