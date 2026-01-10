@@ -58,7 +58,7 @@ meta_files:
   - apps\Everything.bat
 
 package_files:
-  - file_name: everything-1.4.1.1028-r1.7z
+  - file_name: everything-1.4.1.1028-r1.cpmf.7z
     sha256: ${sha256}
   - file_name: everything-1.4.1.1028-r1.cpmm.7z
     sha256: ${sha256}

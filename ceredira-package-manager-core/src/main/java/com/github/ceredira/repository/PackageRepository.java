@@ -2,6 +2,7 @@ package com.github.ceredira.repository;
 
 import com.github.ceredira.config.Config;
 import com.github.ceredira.model.*;
+import com.github.ceredira.utils.PackageInfoUtils;
 import com.github.ceredira.utils.RepositoryIndexUtils;
 import lombok.Getter;
 
@@ -89,13 +90,16 @@ public class PackageRepository {
 
         File root = Config.getFileFromRoot("var/cpm");
 
-        String fileName = String.format("{0}/{1}/{2}/{3}/{2}-{3}-{4}.yaml",
+        String fileName = String.format("%1$s/%2$s/%3$s/%4$s/%5$s/%4$s-%5$s-%6$s.yaml",
                 root,
                 repositoryName,
+                packageName.charAt(0),
                 packageName,
                 version,
                 revision);
 
-        return packages.get(repositoryName).get(packageName);
+        PackageInfo packageInfo = PackageInfoUtils.getPackageInfo(fileName);
+
+        return packageInfo;
     }
 }

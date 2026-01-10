@@ -2,11 +2,13 @@ package com.github.ceredira.manager;
 
 import com.github.ceredira.BaseTest;
 import com.github.ceredira.utils.FileUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.util.Set;
 
+@Slf4j
 public class PackageManagerListTest extends BaseTest {
 
     @Test
@@ -24,6 +26,6 @@ public class PackageManagerListTest extends BaseTest {
         FileUtils.createFileWithContent(destinationIndexFile, repositoryOriginIndexYaml);
 
         Set<String> packages = pm.list("origin", false);
-        System.out.println( "packages: " + packages);
+        log.info("packages: {}", packages);
     }
 }

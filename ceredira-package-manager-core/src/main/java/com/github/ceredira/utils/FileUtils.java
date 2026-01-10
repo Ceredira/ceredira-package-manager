@@ -122,4 +122,12 @@ public class FileUtils {
         }
         return result;
     }
+
+    public static void copyFile(File source, File destination) {
+         try {
+              Files.copy(source.toPath(), destination.toPath(), StandardCopyOption.REPLACE_EXISTING);
+         } catch (IOException e) {
+              throw new RuntimeException(e);
+         }
+    }
 }
