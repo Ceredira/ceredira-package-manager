@@ -61,8 +61,8 @@ public class Repository {
 
     // ToDo доработать валидацию, чтобы не создавались репозитории с пустыми именами (пустой строкой)
     private static String validateName(String name) {
-        if (name == null) {
-            throw new IllegalArgumentException("Repository name must not be null");
+        if (name == null || name.isBlank()) {
+            throw new IllegalArgumentException("Repository name must not be null or blank");
         }
         return name.trim();
     }

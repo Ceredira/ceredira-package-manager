@@ -90,16 +90,7 @@ public class RepositoryManager {
     }
 
     public void removeRepository(String repositoryName) {
-        if (repositoryName == null) {
-            return;
-        }
-
-        Repository repository = repositories.get(repositoryName);
-
-        if (repository == null) {
-            log.warn("Репозиторий {} не найден. Удаление невозможно.", repositoryName);
-            return;
-        }
+        Repository repository = findRepositoryOrThrow(repositoryName);
 
         Path repositoryRoot = root.resolve(repository.getName());
         deleteFolderWithContent(repositoryRoot);
@@ -114,10 +105,7 @@ public class RepositoryManager {
     }
 
     public String info(String repositoryName) {
-        Repository repository = repositories.get(repositoryName);
-        if (repository == null) {
-            throw new IllegalArgumentException("Repository with name '" + repositoryName + "' not found");
-        }
+        Repository repository = findRepositoryOrThrow(repositoryName);
         return String.valueOf(repository);
     }
 
@@ -130,19 +118,19 @@ public class RepositoryManager {
     }
 
     public void enable(String repositoryName) {
-        Repository repository = repositories.get(repositoryName);
-        repository.setEnabled(true);
+        Repository repository = findRepositoryOrThrow(repositoryName);
 
+        repository.setEnabled(true);
         syncWithFilesystem(repository);
-        log.info("Repository \"{}\" is enabled", repositoryName);
+        log.info("Repository \"{}\" is enabled", repository.getName());
     }
 
     public void disable(String repositoryName) {
-        Repository repository = repositories.get(repositoryName);
-        repositories.get(repositoryName).setEnabled(false);
+        Repository repository = findRepositoryOrThrow(repositoryName);
 
+        repository.setEnabled(false);
         syncWithFilesystem(repository);
-        log.info("Repository \"{}\" is disabled", repositoryName);
+        log.info("Repository \"{}\" is disabled", repository.getName());
     }
 
     private void syncWithFilesystem(Repository repository) {
@@ -151,5 +139,20 @@ public class RepositoryManager {
         createFolder(repositoryRoot.toFile());
         Path repositoryYaml = repositoryRoot.resolve("repository.yaml");
         saveToFile(repositoryYaml.toFile(), repository, Repository.class);
+    }
+
+    private Repository findRepositoryOrThrow(String repositoryName) {
+        if (repositoryName == null || repositoryName.isBlank()) {
+            throw new IllegalArgumentException("Имя репозитория не может быть null или пустым");
+        }
+
+        String trimmedName = repositoryName.trim();
+        Repository repository = repositories.get(trimmedName);
+
+        if (repository == null) {
+            throw new IllegalArgumentException("Репозиторий '" + trimmedName + "' не найден. Операция невозможна.");
+        }
+
+        return repository;
     }
 }

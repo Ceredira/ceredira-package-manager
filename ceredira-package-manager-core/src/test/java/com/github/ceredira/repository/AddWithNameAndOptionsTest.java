@@ -18,14 +18,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class AddWithNameAndOptionsTest extends BaseTest {
     private RepositoryManager manager;
-
-    static Stream<Arguments> invalidNames() {
-        return Stream.of(
-                Arguments.of(""),
-                Arguments.of("   "),
-                Arguments.of("\t\n")
-        );
-    }
+    String url = "https://example.com/repo.git";
 
     static Stream<Arguments> emptyOrNullableOptions() {
         return Stream.of(
@@ -75,27 +68,15 @@ public class AddWithNameAndOptionsTest extends BaseTest {
     }
 
     @ParameterizedTest
-    @MethodSource("invalidNames")
+    @MethodSource("provideEmptyOrBlankNames")
     void shouldThrowWhenAddingRepositoryWithInvalidName(String invalidName) {
-        manager.addRepository(invalidName, "https://example.com/repo.git");
-
-        String expectedName = invalidName.trim();
-        assertTrue(manager.getRepositories().containsKey(expectedName));
-
-        Repository repo = manager.getRepositories().get(expectedName);
-        assertEquals(expectedName, repo.getName());
-    }
-
-    @Test
-    void shouldThrowIllegalArgumentExceptionWhenNameIsNull() {
-        String url = "https://example.com/repo.git";
 
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
-                () -> manager.addRepository(null, url)
+                () -> manager.addRepository(invalidName, url)
         );
 
-        assertEquals("Repository name must not be null", exception.getMessage());
+        assertEquals("Repository name must not be null or blank", exception.getMessage());
     }
 
     @ParameterizedTest

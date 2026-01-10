@@ -5,6 +5,8 @@ import com.github.ceredira.manager.RepositoryManager;
 import com.github.ceredira.model.Repository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -16,7 +18,7 @@ public class RepositoryEnableTest extends BaseTest {
         manager = new RepositoryManager();
         manager.addRepository("repo1", "https://example.com/repo1.git");
         manager.addRepository("repo2", "https://example.com/repo2.git");
-        manager.addRepository("", "https://example.com/empty.git");
+        // manager.addRepository("", "https://example.com/empty.git");
     }
 
     @Test
@@ -30,31 +32,22 @@ public class RepositoryEnableTest extends BaseTest {
         assertTrue(repo.isEnabled());
     }
 
-    @Test
-    void shouldEnableRepositoryWithEmptyName() {
-        Repository repo = manager.getRepositories().get("");
-        assertFalse(repo.isEnabled());
+    @ParameterizedTest
+    @MethodSource("provideEmptyOrBlankNames")
+    void shouldThrowExceptionOnInvalidName(String invalidName) {
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            manager.enable(invalidName);
+        });
 
-        manager.enable("");
-
-        assertTrue(repo.isEnabled());
-    }
-
-    @Test
-    void shouldThrowNullPointerExceptionWhenRepositoryNameIsNull() {
-        NullPointerException exception = assertThrows(
-                NullPointerException.class,
-                () -> manager.enable(null)
-        );
-        assertNotNull(exception.getMessage());
+        assertEquals("Имя репозитория не может быть null или пустым", exception.getMessage());
     }
 
     @Test
     void shouldThrowNullPointerExceptionWhenRepositoryNotFound() {
-        NullPointerException exception = assertThrows(
-                NullPointerException.class,
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
                 () -> manager.enable("non-existent")
         );
-        assertNotNull(exception.getMessage());
+        assertEquals("Репозиторий 'non-existent' не найден. Операция невозможна.", exception.getMessage());
     }
 }
