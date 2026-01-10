@@ -46,8 +46,7 @@ public class PackageInfoTest extends BaseTest {
 
         packageInfo.setPackageFiles(List.of(
                 new PackageFile("everything-1.4.1.1028-r1.7z", "${sha256}"),
-                new PackageFile("everything-1.4.1.1028-r1.cpmm.7z", "${sha256}"),
-                new PackageFile("everything-1.4.1.1028-r1.cpmd", "${sha256}")
+                new PackageFile("everything-1.4.1.1028-r1.cpmm.7z", "${sha256}")
         ));
         return packageInfo;
     }
@@ -176,9 +175,5 @@ public class PackageInfoTest extends BaseTest {
         PackageFile file2 = packageFiles.get(1);
         assertEquals("everything-1.4.1.1028-r1.cpmm.7z", file2.getFileName());
         assertEquals("${sha256}", file2.getSha256());
-
-        PackageFile file3 = packageFiles.get(2);
-        assertEquals("everything-1.4.1.1028-r1.cpmd", file3.getFileName());
-        assertEquals("${sha256}", file3.getSha256());
     }
 }
