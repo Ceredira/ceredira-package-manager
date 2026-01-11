@@ -5,8 +5,12 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.text.MessageFormat;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Slf4j
 public class Utils {
@@ -52,5 +56,14 @@ public class Utils {
         }
 
         throw new RuntimeException("Не удалось распарсить имя пакета");
+    }
+
+    public static Set<String> getUniqueDirectories(Collection<String> filePaths) {
+        return filePaths.stream()
+                .map(Paths::get)
+                .map(Path::getParent)
+                .filter(parent -> parent != null)
+                .map(Path::toString)
+                .collect(Collectors.toSet());
     }
 }

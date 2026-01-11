@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Set;
 
 import static com.github.ceredira.utils.Utils.getFullFilePath;
+import static com.github.ceredira.utils.Utils.getUniqueDirectories;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -30,7 +31,11 @@ public class PackageManager {
     }
 
     public void install(String packageName, String versionName, String revisionName) {
+        // ToDo:
+
         PackageInfo packageInfo = PackageRepository.getPackageInfo(packageName, versionName, revisionName);
+
+        // ToDo: Проверить, что пакет существует
 
         PackageFile packageFilesArchive = packageInfo.getPackageFiles().stream()
                 .filter(f -> f.getFileName().endsWith(".cpmf.7z"))
@@ -51,10 +56,41 @@ public class PackageManager {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+
+        // ToDo: Записать в файл installed информацию о том, что пакет установлен
     }
 
-    public void uninstall(String packageName) {
-        throw new RuntimeException("Не реализовано");
+    public void uninstall(String packageName, String versionName, String revisionName) {
+        PackageInfo packageInfo = PackageRepository.getPackageInfo(packageName, versionName, revisionName);
+
+        // ToDo: Проверить, что пакет существует
+
+        File rootPath = Config.getRootPath();
+
+        for (String file : packageInfo.getFiles()) {
+            File  fileToDelete = new File(rootPath, file);
+            if (fileToDelete.exists()) {
+                fileToDelete.delete();
+            }
+        }
+
+        for (String file : packageInfo.getMetaFiles()) {
+            File  fileToDelete = new File(rootPath, file);
+            if (fileToDelete.exists()) {
+                fileToDelete.delete();
+            }
+        }
+
+        Set<String> folders = getUniqueDirectories(packageInfo.getFiles());
+
+        for (String folder : folders) {
+            File  folderToDelete = new File(rootPath, folder);
+            if (folderToDelete.exists()) {
+                folderToDelete.delete();
+            }
+        }
+
+        // ToDo: Удалить из файла installed информацию о том, что пакет установлен
     }
 
     public void upgrade(String packageName) {
