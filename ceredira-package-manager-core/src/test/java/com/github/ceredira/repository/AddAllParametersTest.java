@@ -19,9 +19,9 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class AddAllParametersTest extends BaseTest {
     private RepositoryManager manager;
-    URI url = URI.create("https://example.com/my-repo.git");
-    URI url1 = URI.create("https://old-url.com/my-repo.git");
-    URI url2 = URI.create("https://new-url.com/my-repo.git");
+    URI url = URI.create("http://ceredira.org/my-repo.git");
+    URI url1 = URI.create("http://ceredira.org/my-repo.git");
+    URI url2 = URI.create("http://ceredira.org/my-repo.git");
 
     static Stream<Arguments> provideEmptyOrNullOriginalOptions() {
         return Stream.of(

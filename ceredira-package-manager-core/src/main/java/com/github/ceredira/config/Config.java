@@ -13,7 +13,11 @@ public class Config {
 
     public static File getRootPath() {
         if (rootPath == null) {
-            throw new RuntimeException("Parameter rootPath must be initialized before first use!");
+            if (System.getProperties().containsKey("rootPath")) {
+                rootPath = new File(System.getProperty("rootPath"));
+            } else {
+                throw new RuntimeException("Parameter rootPath must be initialized before first use!");
+            }
         }
 
         return rootPath;

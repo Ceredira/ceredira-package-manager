@@ -8,7 +8,6 @@ import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 import picocli.CommandLine.Parameters;
 
-import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Callable;
@@ -19,7 +18,7 @@ import java.util.concurrent.Callable;
         subcommands = {Main.RepositoryGroup.class})
 public class Main implements Callable<Integer> {
 
-    private static final RepositoryManager repositoryManager = new RepositoryManager(Path.of(""));
+    private static final RepositoryManager repositoryManager = new RepositoryManager();
 
     public static void main(String[] args) {
         int exitCode = new CommandLine(new Main()).execute(args);

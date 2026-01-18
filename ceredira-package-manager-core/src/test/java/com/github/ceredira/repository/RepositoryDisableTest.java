@@ -15,8 +15,8 @@ public class RepositoryDisableTest extends BaseTest {
     @BeforeEach
     void setUp() {
         manager = new RepositoryManager();
-        manager.addRepository("repo1", "https://example.com/repo1.git");
-        manager.addRepository("repo2", "https://example.com/repo2.git");
+        manager.addRepository("repo1", "http://ceredira.org/repo1.git");
+        manager.addRepository("repo2", "http://ceredira.org/repo2.git");
     }
 
     @Test
