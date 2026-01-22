@@ -3,11 +3,11 @@ package com.github.ceredira.manager;
 import com.github.ceredira.config.Config;
 import com.github.ceredira.model.Repository;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
@@ -17,14 +17,14 @@ import java.util.stream.Stream;
 
 import static com.github.ceredira.utils.FolderUtils.createFolder;
 import static com.github.ceredira.utils.FolderUtils.deleteFolderWithContent;
+import static com.github.ceredira.utils.NetUtils.combineAndValidate;
+import static com.github.ceredira.utils.NetUtils.downloadFile;
 import static com.github.ceredira.utils.YamlUtils.loadFromFile;
 import static com.github.ceredira.utils.YamlUtils.saveToFile;
 
 @Getter
 @Setter
 @Slf4j
-// ToDo: потом убрать NoArgsConstructor
-@NoArgsConstructor
 public class RepositoryManager {
 
     // private Repository repository = (Repository) readFromYamlFile(new File("repositories.yaml"), Repository.class);
@@ -32,8 +32,20 @@ public class RepositoryManager {
 
     private Path root = Config.getRootPathAsPath();
 
+    public RepositoryManager() {
+        this(Config.getRootPathAsPath());
+    }
+
     public RepositoryManager(Path root) {
         this.root = root.resolve("repository");
+
+        if (!Files.exists(this.root)) {
+            try {
+                Files.createDirectories(this.root);
+            } catch (Exception e) {
+                throw new RuntimeException("Не удалось создать каталог: " + e.getMessage(), e);
+            }
+        }
 
         // Прочитать все существующие репозитории
         try (Stream<Path> stream = Files.list(this.root)) {
@@ -77,6 +89,8 @@ public class RepositoryManager {
         repositories.put(repository.getName(), repository);
         syncWithFilesystem(repository);
 
+        repositoryOriginSync(repository, remoteRepositoryUrl);
+
         log.info("Удаленный репозиторий {} по адресу {} добавлен", repositoryName, remoteRepositoryUrl);
     }
 
@@ -85,6 +99,7 @@ public class RepositoryManager {
 
         repositories.put(repository.getName(), repository);
         syncWithFilesystem(repository);
+        repositoryOriginSync(repository, remoteRepositoryUrl);
 
         log.info("Удаленный репозиторий {} по адресу {} добавлен", repositoryName, remoteRepositoryUrl);
     }
@@ -154,5 +169,17 @@ public class RepositoryManager {
         }
 
         return repository;
+    }
+
+    private void repositoryOriginSync(Repository repository, String remoteRepositoryUrl) {
+        Path repositoryRoot = root.resolve(repository.getName());
+
+        try {
+            URL downloadIndexYaml = combineAndValidate(remoteRepositoryUrl, "index.yaml");
+            log.info(downloadIndexYaml.toString());
+            downloadFile(downloadIndexYaml, repositoryRoot.resolve("index.yaml").toString());
+        } catch (Exception e) {
+            throw new RuntimeException("Ошибка инициализации репозитория: " + e.getMessage(), e);
+        }
     }
 }

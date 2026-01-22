@@ -15,8 +15,8 @@ public class RepositoryInfoTest extends BaseTest {
     @BeforeEach
     void setUp() {
         manager = new RepositoryManager();
-        manager.addRepository("repo1", "https://example.com/repo1.git");
-        manager.addRepository("repo2", "https://example.com/repo2.git");
+        manager.addRepository("repo1", "http://ceredira.org/repo1.git");
+        manager.addRepository("repo2", "http://ceredira.org/repo2.git");
     }
 
     @Test
@@ -25,7 +25,7 @@ public class RepositoryInfoTest extends BaseTest {
 
         assertNotNull(info);
         assertTrue(info.contains("repo1"));
-        assertTrue(info.contains("https://example.com/repo1.git"));
+        assertTrue(info.contains("http://ceredira.org/repo1.git"));
     }
 
     @ParameterizedTest

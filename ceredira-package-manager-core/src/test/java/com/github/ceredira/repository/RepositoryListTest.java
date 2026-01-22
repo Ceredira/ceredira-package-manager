@@ -15,13 +15,16 @@ public class RepositoryListTest extends BaseTest {
     @BeforeEach
     void setUp() {
         manager = new RepositoryManager();
+    }
 
-        manager.addRepository("repo1", "https://example.com/repo1.git");
-        manager.addRepository("repo2", "https://example.com/repo2.git");
+    public void createTestRepositories() {
+        manager.addRepository("repo1", "http://ceredira.org/repo1.git");
+        manager.addRepository("repo2", "http://ceredira.org/repo2.git");
     }
 
     @Test
     void shouldReturnAllRepositoryNamesAsSet() {
+        createTestRepositories();
         Set<String> names = manager.list();
         assertNotNull(names);
         assertEquals(2, names.size());
@@ -41,7 +44,7 @@ public class RepositoryListTest extends BaseTest {
 
     @Test
     void shouldReflectChangesInUnderlyingMap() {
-
+        createTestRepositories();
         Set<String> names = manager.list();
 
         manager.removeRepository("repo1");
@@ -54,6 +57,7 @@ public class RepositoryListTest extends BaseTest {
     // то этот тест покажет, что текущая реализация НЕ защищена:
     @Test
     void shouldAllowExternalModificationOfKeySet() {
+        createTestRepositories();
         Set<String> names = manager.list();
 
         // Это упадёт с UnsupportedOperationException, если keySet() не поддерживает remove,

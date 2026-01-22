@@ -16,9 +16,9 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class AddWithNameAndUrlTest extends BaseTest {
     private RepositoryManager manager;
-    private final URI url = URI.create("https://example.com/my-repo.git");
-    private final URI url1 = URI.create("https://old-url.com/my-repo.git");
-    private final URI url2 = URI.create("https://new-url.com/my-repo.git");
+    private final URI url = URI.create("http://ceredira.org/my-repo.git"); // http://desktop-cdp6mgl:1180/ ??
+    private final URI url1 = URI.create("http://ceredira.org/my-repo1.git");
+    private final URI url2 = URI.create("http://ceredira.org/my-repo2.git");
 
     static Stream<Arguments> provideEmptyOrBlankUrls() {
         return Stream.of(
