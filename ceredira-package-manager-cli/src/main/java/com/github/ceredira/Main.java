@@ -1,8 +1,11 @@
 package com.github.ceredira;
 
+import com.github.ceredira.manager.PackageManager;
 import com.github.ceredira.manager.RepositoryManager;
+import com.github.ceredira.model.PackageInfoParsed;
 import com.github.ceredira.model.Repository;
 import com.github.ceredira.model.RepositoryType;
+import com.github.ceredira.utils.InstallUtils;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
@@ -15,10 +18,15 @@ import java.util.concurrent.Callable;
 @Command(name = "cpm", mixinStandardHelpOptions = true,
         version = "1.0",
         description = "Ceredira package manager",
-        subcommands = {Main.RepositoryGroup.class})
+        subcommands = {
+                Main.RepositoryGroup.class,
+                Main.PackageGroup.class,
+                Main.InstallCmd.class
+        })
 public class Main implements Callable<Integer> {
 
     private static final RepositoryManager repositoryManager = new RepositoryManager();
+    private static final PackageManager packageManager = new PackageManager();
 
     public static void main(String[] args) {
         int exitCode = new CommandLine(new Main()).execute(args);
@@ -137,6 +145,33 @@ public class Main implements Callable<Integer> {
             if (repository.getType().equals(RepositoryType.REMOTE)) {
                 System.out.println("  * Адрес: " + repository.getUrl());
             }
+        }
+    }
+
+    // --- ПРОМЕЖУТОЧНАЯ КОМАНДА 'package' ---
+    @Command(name = "package",
+            description = "Операции с пакетами",
+            subcommands = {
+                    InstallCmd.class
+            })
+    static class PackageGroup implements Runnable {
+        @Override
+        public void run() {
+            // Если введено просто 'package' без подкоманды
+            CommandLine.usage(this, System.out);
+        }
+    }
+
+    // --- ДЕЙСТВИЯ (ПОДКОМАНДЫ ДЛЯ PACKAGE) ---
+    @Command(name = "install", description = "Установить")
+    static class InstallCmd implements Runnable {
+
+        @Parameters(index = "0", description = "Имя пакета")
+        String commandString;
+
+        public void run() {
+            PackageInfoParsed info = InstallUtils.parse(commandString);
+            packageManager.install(info.packageName(), info.packageVersion(), info.packageRevision());
         }
     }
 }
