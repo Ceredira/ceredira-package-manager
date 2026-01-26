@@ -90,6 +90,7 @@ public class PackageRepository {
 
         File root = Config.getFileFromRoot("var/cpm");
 
+        // ToDo: существует ли файл
         String fileName = String.format("%1$s/%2$s/%3$s/%4$s/%5$s/%4$s-%5$s-%6$s.yaml",
                 root,
                 repositoryName,
