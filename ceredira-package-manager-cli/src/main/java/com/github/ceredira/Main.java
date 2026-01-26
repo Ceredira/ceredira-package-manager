@@ -20,8 +20,8 @@ import java.util.concurrent.Callable;
         description = "Ceredira package manager",
         subcommands = {
                 Main.RepositoryGroup.class,
-                Main.PackageGroup.class,
-                Main.InstallCmd.class
+                Main.InstallCmd.class,
+                Main.UninstallCmd.class
         })
 public class Main implements Callable<Integer> {
 
@@ -37,6 +37,32 @@ public class Main implements Callable<Integer> {
     public Integer call() {
         CommandLine.usage(this, System.out);
         return 0;
+    }
+
+    @Command(name = "install", description = "Установить пакет")
+    static class InstallCmd implements Runnable {
+
+        @Parameters(index = "0", description = "Имя пакета")
+        String commandString;
+        @Override
+        public void run() {
+            PackageInfoParsed info = InstallUtils.parse(commandString);
+            packageManager.install(info.packageName(), info.packageVersion(), info.packageRevision());
+            System.out.println("Начинается установка пакета: " + info.packageName());
+        }
+    }
+
+    @Command(name = "uninstall", description = "Удалить пакет")
+    static class UninstallCmd implements Runnable {
+
+        @Parameters(index = "0", description = "Имя пакета")
+        String commandString;
+        @Override
+        public void run() {
+            PackageInfoParsed info = InstallUtils.parse(commandString);
+            packageManager.uninstall(info.packageName(), info.packageVersion(), info.packageRevision());
+            System.out.println("Пакет " + info.packageName() + " удален");
+        }
     }
 
     // --- ПРОМЕЖУТОЧНАЯ КОМАНДА 'repository' ---
@@ -148,30 +174,5 @@ public class Main implements Callable<Integer> {
         }
     }
 
-    // --- ПРОМЕЖУТОЧНАЯ КОМАНДА 'package' ---
-    @Command(name = "package",
-            description = "Операции с пакетами",
-            subcommands = {
-                    InstallCmd.class
-            })
-    static class PackageGroup implements Runnable {
-        @Override
-        public void run() {
-            // Если введено просто 'package' без подкоманды
-            CommandLine.usage(this, System.out);
-        }
-    }
 
-    // --- ДЕЙСТВИЯ (ПОДКОМАНДЫ ДЛЯ PACKAGE) ---
-    @Command(name = "install", description = "Установить")
-    static class InstallCmd implements Runnable {
-
-        @Parameters(index = "0", description = "Имя пакета")
-        String commandString;
-
-        public void run() {
-            PackageInfoParsed info = InstallUtils.parse(commandString);
-            packageManager.install(info.packageName(), info.packageVersion(), info.packageRevision());
-        }
-    }
 }
