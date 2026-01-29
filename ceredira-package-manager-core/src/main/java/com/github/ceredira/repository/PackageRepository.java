@@ -98,11 +98,9 @@ public class PackageRepository {
                 .getVersions().get(version)
                 .getRevisions().get(revision).getSha256();
 
-        File root = Config.getFileFromRoot("var/cpm");
-
         // ToDo: существует ли файл
         String fileName = String.format("%1$s/%2$s/%3$s/%4$s/%5$s/%4$s-%5$s-%6$s.yaml",
-                root,
+                repositoryRoot,
                 repositoryName,
                 packageName.charAt(0),
                 packageName,
@@ -115,30 +113,30 @@ public class PackageRepository {
     }
 
     public static void markPackageAsInstalled(String packageName, String versionName, String revisionName) {
-        if (!PackageRepository.getInstalled().containsKey("origin"))
-            PackageRepository.getInstalled().put("origin", new HashSet<>());
+        if (!installed.containsKey("origin"))
+            installed.put("origin", new HashSet<>());
 
         String fullPackageName = String.format("%s-%s-%s", packageName, versionName, revisionName);
-        PackageRepository.getInstalled().get("origin").add(fullPackageName);
+        installed.get("origin").add(fullPackageName);
 
         YamlUtils.saveToFile(repositoryInstalledYaml, installed, Map.class);
     }
 
     public static void unmarkPackageAsInstalled(String packageName, String versionName, String revisionName) {
-        if (!PackageRepository.getInstalled().containsKey("origin"))
-            PackageRepository.getInstalled().put("origin", new HashSet<>());
+        if (!installed.containsKey("origin"))
+            installed.put("origin", new HashSet<>());
 
         String fullPackageName = String.format("%s-%s-%s", packageName, versionName, revisionName);
-        PackageRepository.getInstalled().get("origin").remove(fullPackageName);
+        installed.get("origin").remove(fullPackageName);
 
         YamlUtils.saveToFile(repositoryInstalledYaml, installed, Map.class);
     }
 
     public static boolean isPackageInstalled(String packageName, String versionName, String revisionName) {
-        if (!PackageRepository.getInstalled().containsKey("origin"))
-            PackageRepository.getInstalled().put("origin", new HashSet<>());
+        if (!installed.containsKey("origin"))
+            installed.put("origin", new HashSet<>());
 
         String fullPackageName = String.format("%s-%s-%s", packageName, versionName, revisionName);
-        return PackageRepository.getInstalled().get("origin").contains(fullPackageName);
+        return installed.get("origin").contains(fullPackageName);
     }
 }
