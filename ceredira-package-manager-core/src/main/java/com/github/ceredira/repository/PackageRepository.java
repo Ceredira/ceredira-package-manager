@@ -4,13 +4,11 @@ import com.github.ceredira.config.Config;
 import com.github.ceredira.model.*;
 import com.github.ceredira.utils.PackageInfoUtils;
 import com.github.ceredira.utils.RepositoryIndexUtils;
+import com.github.ceredira.utils.YamlUtils;
 import lombok.Getter;
 
 import java.io.File;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class PackageRepository {
     @Getter
@@ -19,15 +17,27 @@ public class PackageRepository {
     @Getter
     private static final Map<String, RepositoryIndex> indexes = new HashMap<>();
 
+    @Getter
+    private static Map<String, Set<String>> installed = new HashMap<>();
+
+    @Getter
+    private static final File repositoryRoot = Config.getFileFromRoot("var/cpm");
+
+    @Getter
+    private static File repositoryInstalledYaml = new File(repositoryRoot, "installed.yaml");
+
     static {
         for (Repository r : RepositoryRepository.getRepositories().values()) {
-            File root = Config.getFileFromRoot("var/cpm/" + r.getName());
 
-            File repositoryIndexYaml = new File(root, "index.yaml");
+            File repositoryIndexYaml = new File(repositoryRoot, r.getName() + "/index.yaml");
             if (repositoryIndexYaml.exists()) {
                 RepositoryIndex repositoryIndex = RepositoryIndexUtils.getRepositoryIndex(repositoryIndexYaml.getPath());
                 indexes.put(r.getName(), repositoryIndex);
             }
+        }
+
+        if (repositoryInstalledYaml.exists()) {
+            installed = (Map<String, Set<String>>) YamlUtils.loadFromFile(repositoryInstalledYaml, Map.class);
         }
     }
 
@@ -102,5 +112,33 @@ public class PackageRepository {
         PackageInfo packageInfo = PackageInfoUtils.getPackageInfo(fileName);
 
         return packageInfo;
+    }
+
+    public static void markPackageAsInstalled(String packageName, String versionName, String revisionName) {
+        if (!PackageRepository.getInstalled().containsKey("origin"))
+            PackageRepository.getInstalled().put("origin", new HashSet<>());
+
+        String fullPackageName = String.format("%s-%s-%s", packageName, versionName, revisionName);
+        PackageRepository.getInstalled().get("origin").add(fullPackageName);
+
+        YamlUtils.saveToFile(repositoryInstalledYaml, installed, Map.class);
+    }
+
+    public static void unmarkPackageAsInstalled(String packageName, String versionName, String revisionName) {
+        if (!PackageRepository.getInstalled().containsKey("origin"))
+            PackageRepository.getInstalled().put("origin", new HashSet<>());
+
+        String fullPackageName = String.format("%s-%s-%s", packageName, versionName, revisionName);
+        PackageRepository.getInstalled().get("origin").remove(fullPackageName);
+
+        YamlUtils.saveToFile(repositoryInstalledYaml, installed, Map.class);
+    }
+
+    public static boolean isPackageInstalled(String packageName, String versionName, String revisionName) {
+        if (!PackageRepository.getInstalled().containsKey("origin"))
+            PackageRepository.getInstalled().put("origin", new HashSet<>());
+
+        String fullPackageName = String.format("%s-%s-%s", packageName, versionName, revisionName);
+        return PackageRepository.getInstalled().get("origin").contains(fullPackageName);
     }
 }

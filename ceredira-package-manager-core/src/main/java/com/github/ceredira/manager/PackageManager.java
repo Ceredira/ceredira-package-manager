@@ -58,12 +58,17 @@ public class PackageManager {
         }
 
         // ToDo: Записать в файл installed информацию о том, что пакет установлен
+        PackageRepository.markPackageAsInstalled(packageName, versionName, revisionName);
     }
 
     public void uninstall(String packageName, String versionName, String revisionName) {
         PackageInfo packageInfo = PackageRepository.getPackageInfo(packageName, versionName, revisionName);
 
         // ToDo: Проверить, что пакет существует
+        if (!PackageRepository.isPackageInstalled(packageName, versionName, revisionName)) {
+            String fullPackageName = String.format("%s-%s-s", packageName, versionName, revisionName);
+            throw new RuntimeException("Указанного пакета не существует: " + fullPackageName);
+        }
 
         File rootPath = Config.getRootPath();
 
@@ -91,6 +96,7 @@ public class PackageManager {
         }
 
         // ToDo: Удалить из файла installed информацию о том, что пакет установлен
+        PackageRepository.unmarkPackageAsInstalled(packageName, versionName, revisionName);
     }
 
     public void upgrade(String packageName) {
