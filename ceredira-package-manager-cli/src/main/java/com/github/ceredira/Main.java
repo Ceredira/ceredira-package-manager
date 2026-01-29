@@ -1,8 +1,11 @@
 package com.github.ceredira;
 
+import com.github.ceredira.manager.PackageManager;
 import com.github.ceredira.manager.RepositoryManager;
+import com.github.ceredira.model.PackageInfoParsed;
 import com.github.ceredira.model.Repository;
 import com.github.ceredira.model.RepositoryType;
+import com.github.ceredira.utils.InstallUtils;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
@@ -15,10 +18,15 @@ import java.util.concurrent.Callable;
 @Command(name = "cpm", mixinStandardHelpOptions = true,
         version = "1.0",
         description = "Ceredira package manager",
-        subcommands = {Main.RepositoryGroup.class})
+        subcommands = {
+                Main.RepositoryGroup.class,
+                Main.InstallCmd.class,
+                Main.UninstallCmd.class
+        })
 public class Main implements Callable<Integer> {
 
     private static final RepositoryManager repositoryManager = new RepositoryManager();
+    private static final PackageManager packageManager = new PackageManager();
 
     public static void main(String[] args) {
         int exitCode = new CommandLine(new Main()).execute(args);
@@ -29,6 +37,32 @@ public class Main implements Callable<Integer> {
     public Integer call() {
         CommandLine.usage(this, System.out);
         return 0;
+    }
+
+    @Command(name = "install", description = "Установить пакет")
+    static class InstallCmd implements Runnable {
+
+        @Parameters(index = "0", description = "Имя пакета")
+        String commandString;
+        @Override
+        public void run() {
+            PackageInfoParsed info = InstallUtils.parse(commandString);
+            packageManager.install(info.packageName(), info.packageVersion(), info.packageRevision());
+            System.out.println("Начинается установка пакета: " + info.packageName());
+        }
+    }
+
+    @Command(name = "uninstall", description = "Удалить пакет")
+    static class UninstallCmd implements Runnable {
+
+        @Parameters(index = "0", description = "Имя пакета")
+        String commandString;
+        @Override
+        public void run() {
+            PackageInfoParsed info = InstallUtils.parse(commandString);
+            packageManager.uninstall(info.packageName(), info.packageVersion(), info.packageRevision());
+            System.out.println("Пакет " + info.packageName() + " удален");
+        }
     }
 
     // --- ПРОМЕЖУТОЧНАЯ КОМАНДА 'repository' ---
@@ -139,4 +173,6 @@ public class Main implements Callable<Integer> {
             }
         }
     }
+
+
 }
