@@ -98,7 +98,8 @@ public class PackageRepository {
                 .getVersions().get(version)
                 .getRevisions().get(revision).getSha256();
 
-        // ToDo: существует ли файл
+        File root = Config.getFileFromRoot("var/cpm");
+
         String fileName = String.format("%1$s/%2$s/%3$s/%4$s/%5$s/%4$s-%5$s-%6$s.yaml",
                 repositoryRoot,
                 repositoryName,
