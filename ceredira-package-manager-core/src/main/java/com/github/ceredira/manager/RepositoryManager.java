@@ -30,14 +30,14 @@ public class RepositoryManager {
     // private Repository repository = (Repository) readFromYamlFile(new File("repositories.yaml"), Repository.class);
     private Map<String, Repository> repositories = new HashMap<>();
 
-    private Path root = Config.getRootPathAsPath();
+    private Path root;
 
     public RepositoryManager() {
         this(Config.getRootPathAsPath());
     }
 
     public RepositoryManager(Path root) {
-        this.root = root.resolve("repository");
+        this.root = root.resolve("var/cpm");
 
         if (!Files.exists(this.root)) {
             try {

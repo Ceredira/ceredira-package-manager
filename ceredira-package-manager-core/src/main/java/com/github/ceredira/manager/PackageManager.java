@@ -4,6 +4,7 @@ import com.github.ceredira.config.Config;
 import com.github.ceredira.model.CpmPackage;
 import com.github.ceredira.model.PackageFile;
 import com.github.ceredira.model.PackageInfo;
+import com.github.ceredira.model.RepositoryIndex;
 import com.github.ceredira.repository.PackageRepository;
 import com.github.ceredira.utils.SevenZUtils;
 import com.github.ceredira.utils.Utils;
@@ -13,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.io.File;
 import java.text.MessageFormat;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import static com.github.ceredira.utils.Utils.getFullFilePath;
@@ -31,6 +33,16 @@ public class PackageManager {
     }
 
     public void install(String packageName, String versionName, String revisionName) {
+        Map<String, Map<String, PackageInfo>> packages = PackageRepository.getPackages();
+
+        boolean found = packages.values().stream() // Берем все Map<String, PackageInfo>
+                .flatMap(innerMap -> innerMap.keySet().stream()) // Достаем все ключи (String)
+                .anyMatch(key -> key.equals(packageName)); // Ищем совпадение
+
+        if (!found) {
+            throw new RuntimeException("Значение не найдено!");
+        }
+
         // ToDo:
 
         PackageInfo packageInfo = PackageRepository.getPackageInfo(packageName, versionName, revisionName);
@@ -50,6 +62,9 @@ public class PackageManager {
         try {
             File packageFilesArchiveFile = getFullFilePath(packageFilesArchive.getFileName());
             File packageMetafilesArchiveFile = getFullFilePath(packageMetafilesArchive.getFileName());
+
+            // ToDo: проверить, что: 1. файлы существуют локально,
+            // если нет - то скачать их. Для скачивания использовать метод downloadFile(что скачивать)
 
             SevenZUtils.decompress(packageFilesArchiveFile, Config.getRootPath());
             SevenZUtils.decompress(packageMetafilesArchiveFile, Config.getRootPath());

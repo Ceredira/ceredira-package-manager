@@ -39,6 +39,34 @@ public class Utils {
         }
     }
 
+    // ToDo: getFullFilePathForRemoteRepository(String Repository, String packageName) - взять origin
+    public static String getFullFilePathForRemoteRepository(String repository, String packageName) {
+
+        java.util.regex.Pattern pattern = java.util.regex.Pattern.compile("^([^-]+)-([\\d.]+)-(r\\d+)?");
+        java.util.regex.Matcher matcher = pattern.matcher(packageName);
+
+        if (matcher.find()) {
+            String name = matcher.group(1);    // everything
+            String version = matcher.group(2); // 1.4.1.1028
+            String firstChar = String.valueOf(name.charAt(0)); // e
+
+            repository = "origin";
+
+            String BASE_REPO_URL = "http://localhost:80";
+
+            return String.format("%s/%s/%s/%s/%s", // если раскомментить repository, вернуть ещё один /%s !!
+                    BASE_REPO_URL,
+                    // repository,
+                    firstChar,
+                    name,
+                    version,
+                    packageName
+            );
+        }
+
+        throw new RuntimeException("Не удалось построить URL для файла: " + packageName);
+    }
+
     public static File getFullFilePath(String packageName) {
         // Регулярное выражение:
         // ^([^-]+)  - захватывает все до первого дефиса (название: everything)
