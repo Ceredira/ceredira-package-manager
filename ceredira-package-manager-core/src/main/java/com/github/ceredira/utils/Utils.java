@@ -1,6 +1,7 @@
 package com.github.ceredira.utils;
 
 import com.github.ceredira.config.Config;
+import com.github.ceredira.manager.RepositoryManager;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
@@ -40,50 +41,26 @@ public class Utils {
     }
 
     // ToDo: getFullFilePathForRemoteRepository(String Repository, String packageName) - взять origin
-    public static String getFullFilePathForRemoteRepository(String repository, String packageName) {
+    public static String getRemoteFullFilePath(String repositoryName, String packageName, String packageVersion, String packageFileName) {
 
-        java.util.regex.Pattern pattern = java.util.regex.Pattern.compile("^([^-]+)-([\\d.]+)-(r\\d+)?");
-        java.util.regex.Matcher matcher = pattern.matcher(packageName);
+        String packageNameFirstChar = String.valueOf(packageName.charAt(0)); // e
 
-        if (matcher.find()) {
-            String name = matcher.group(1);    // everything
-            String version = matcher.group(2); // 1.4.1.1028
-            String firstChar = String.valueOf(name.charAt(0)); // e
+        String repositoryUrl = new RepositoryManager().getRepositories().get(repositoryName).getUrl().toString();
 
-            repository = "origin";
-
-            String BASE_REPO_URL = "http://localhost:80";
-
-            return String.format("%s/%s/%s/%s/%s", // если раскомментить repository, вернуть ещё один /%s !!
-                    BASE_REPO_URL,
-                    // repository,
-                    firstChar,
-                    name,
-                    version,
-                    packageName
-            );
-        }
-
-        throw new RuntimeException("Не удалось построить URL для файла: " + packageName);
+        return String.format("%s/%s/%s/%s/%s",
+                repositoryUrl,
+                packageNameFirstChar,
+                packageName,
+                packageVersion,
+                packageFileName
+        );
     }
 
-    public static File getFullFilePath(String packageName) {
-        // Регулярное выражение:
-        // ^([^-]+)  - захватывает все до первого дефиса (название: everything)
-        // -([\d.]+) - захватывает дефис и следующую за ним версию из цифр и точек (версия: 1.4.1.1028)
-        java.util.regex.Pattern pattern = java.util.regex.Pattern.compile("^([^-]+)-([\\d.]+)");
-        java.util.regex.Matcher matcher = pattern.matcher(packageName);
+    public static File getLocalFullFilePath(String repositoryName, String packageName, String packageVersion, String packageFileName) {
+        String firstChar = String.valueOf(packageName.charAt(0)); // e
 
-        if (matcher.find()) {
-            String name = matcher.group(1);    // everything
-            String version = matcher.group(2); // 1.4.1.1028
-            String firstChar = String.valueOf(name.charAt(0)); // e
-
-            return new File(Config.getFileFromRoot("/var/cpm/origin"),
-                    String.format("%s/%s/%s/%s", firstChar, name, version, packageName));
-        }
-
-        throw new RuntimeException("Не удалось распарсить имя пакета");
+        return new File(Config.getFileFromRoot("/var/cpm"),
+                String.format("%s/%s/%s/%s/%s", repositoryName, firstChar, packageName, packageVersion, packageFileName));
     }
 
     public static Set<String> getUniqueDirectories(Collection<String> filePaths) {

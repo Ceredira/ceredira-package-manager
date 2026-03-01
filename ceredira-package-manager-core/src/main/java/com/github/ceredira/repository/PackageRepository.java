@@ -12,9 +12,6 @@ import java.util.*;
 
 public class PackageRepository {
     @Getter
-    private static final Map<String, Map<String, PackageInfo>> packages = new HashMap<>();
-
-    @Getter
     private static final Map<String, RepositoryIndex> indexes = new HashMap<>();
 
     @Getter
@@ -24,7 +21,7 @@ public class PackageRepository {
     private static final File repositoryRoot = Config.getFileFromRoot("var/cpm");
 
     @Getter
-    private static File repositoryInstalledYaml = new File(repositoryRoot, "installed.yaml");
+    private static final File repositoryInstalledYaml = new File(repositoryRoot, "installed.yaml");
 
     static {
         for (Repository r : RepositoryRepository.getRepositories().values()) {
@@ -94,7 +91,7 @@ public class PackageRepository {
         String repositoryName = "origin";
 
         // ToDo: проверить потом контрольную сумму
-        String sha26 = indexes.get(repositoryName).getPackages().get(packageName)
+        String sha256 = indexes.get(repositoryName).getPackages().get(packageName)
                 .getVersions().get(version)
                 .getRevisions().get(revision).getSha256();
 
@@ -107,6 +104,8 @@ public class PackageRepository {
                 packageName,
                 version,
                 revision);
+
+        // скачивание yaml файла, если его нет
 
         PackageInfo packageInfo = PackageInfoUtils.getPackageInfo(fileName);
 

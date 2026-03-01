@@ -10,6 +10,10 @@ import java.nio.file.Path;
 
 public class SevenZUtils {
     public static void decompress(File archivePath, File destinationPath) throws IOException {
+        if (!archivePath.exists()) {
+            throw new RuntimeException("Распаковываемый архив не существует: " + archivePath);
+        }
+
         // Получаем абсолютный путь целевой папки для сравнения
         Path targetDir = destinationPath.toPath().toAbsolutePath().normalize();
 
