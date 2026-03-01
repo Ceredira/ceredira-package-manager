@@ -4,7 +4,6 @@ import com.github.ceredira.config.Config;
 import com.github.ceredira.model.CpmPackage;
 import com.github.ceredira.model.PackageFile;
 import com.github.ceredira.model.PackageInfo;
-import com.github.ceredira.model.RepositoryIndex;
 import com.github.ceredira.repository.PackageRepository;
 import com.github.ceredira.utils.SevenZUtils;
 import com.github.ceredira.utils.Utils;
@@ -13,12 +12,13 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
 import java.text.MessageFormat;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
+import java.util.function.BiConsumer;
 
-import static com.github.ceredira.utils.Utils.getFullFilePath;
-import static com.github.ceredira.utils.Utils.getUniqueDirectories;
+import static com.github.ceredira.utils.NetUtils.downloadFile;
+import static com.github.ceredira.utils.Utils.*;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -33,46 +33,38 @@ public class PackageManager {
     }
 
     public void install(String packageName, String versionName, String revisionName) {
-        Map<String, Map<String, PackageInfo>> packages = PackageRepository.getPackages();
+        String repositoryName = "origin";
+        PackageInfo packageInfo = searchPackageInfo(packageName, versionName, revisionName);
 
-        boolean found = packages.values().stream() // Берем все Map<String, PackageInfo>
-                .flatMap(innerMap -> innerMap.keySet().stream()) // Достаем все ключи (String)
-                .anyMatch(key -> key.equals(packageName)); // Ищем совпадение
+        // Если архивы пакета не существуют, то скачиваем
+        download(packageInfo);
 
-        if (!found) {
-            throw new RuntimeException("Значение не найдено!");
+        packageFilesAction(packageInfo, (file, url) -> {
+            try {
+                SevenZUtils.decompress(file, Config.getRootPath());
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        });
+
+        List<PackageFile> packageFiles = getPackageFiles(packageInfo);
+
+        for (PackageFile packageFile: packageFiles){
+            File packageFilesArchive = getLocalFullFilePath(
+                    repositoryName,
+                    packageName,
+                    versionName,
+                    packageFile.getFileName()
+            );
+
+            try {
+                SevenZUtils.decompress(packageFilesArchive, Config.getRootPath());
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
         }
 
-        // ToDo:
-
-        PackageInfo packageInfo = PackageRepository.getPackageInfo(packageName, versionName, revisionName);
-
-        // ToDo: Проверить, что пакет существует
-
-        PackageFile packageFilesArchive = packageInfo.getPackageFiles().stream()
-                .filter(f -> f.getFileName().endsWith(".cpmf.7z"))
-                .findFirst()
-                .orElseThrow();
-
-        PackageFile packageMetafilesArchive =  packageInfo.getPackageFiles().stream()
-                 .filter(f -> f.getFileName().endsWith(".cpmm.7z"))
-                 .findFirst()
-                 .orElseThrow();
-
-        try {
-            File packageFilesArchiveFile = getFullFilePath(packageFilesArchive.getFileName());
-            File packageMetafilesArchiveFile = getFullFilePath(packageMetafilesArchive.getFileName());
-
-            // ToDo: проверить, что: 1. файлы существуют локально,
-            // если нет - то скачать их. Для скачивания использовать метод downloadFile(что скачивать)
-
-            SevenZUtils.decompress(packageFilesArchiveFile, Config.getRootPath());
-            SevenZUtils.decompress(packageMetafilesArchiveFile, Config.getRootPath());
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-
-        // ToDo: Записать в файл installed информацию о том, что пакет установлен
+        // Записать в файл installed информацию о том, что пакет установлен
         PackageRepository.markPackageAsInstalled(packageName, versionName, revisionName);
     }
 
@@ -143,15 +135,79 @@ public class PackageManager {
     }
 
     // Дополнительные методы
-    private void downloadAndExtract(CpmPackage pkg) {
-        throw new RuntimeException("Не реализовано");
+    private void download(String packageName, String versionName, String revisionName) {
+        String repositoryName = "origin";
+        PackageInfo packageInfo = searchPackageInfo(packageName, versionName, revisionName);
+        download(packageInfo);
     }
 
-    private void saveToLocal(CpmPackage pkg) {
-        throw new RuntimeException("Не реализовано");
+    private void download(PackageInfo packageInfo) {
+        String repositoryName = "origin";
+        List<PackageFile> packageFiles = getPackageFiles(packageInfo);
+
+        packageFilesAction(packageInfo, (file, url) -> {
+            if (!file.exists()) {
+                try {
+                    downloadFile(url, file);
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        });
     }
 
     private boolean isInstalled(CpmPackage pkg) {
         throw new RuntimeException("Не реализовано");
+    }
+
+    private record DownloadTask(PackageFile filesArchive, File filesPath,
+                                PackageFile metaArchive, File metaPath) {
+    }
+
+    private PackageInfo searchPackageInfo(String packageName, String versionName, String revisionName) {
+        String repositoryName = "origin";
+        Set<String> packages = PackageRepository.getPackages(repositoryName);
+
+        boolean found = packages.contains(packageName);
+
+        if (!found) {
+            throw new RuntimeException("Значение не найдено!");
+        }
+
+        PackageInfo packageInfo = PackageRepository.getPackageInfo(packageName, versionName, revisionName);
+        return packageInfo;
+    }
+
+    private List<PackageFile> getPackageFiles(PackageInfo packageInfo) {
+        List<PackageFile> packageFiles = new ArrayList<>();
+        for (PackageFile packageFile : packageInfo.getPackageFiles()) {
+            if (packageFile.getFileName().endsWith(".cpmf.7z") || packageFile.getFileName().endsWith(".cpmm.7z")) {
+                packageFiles.add(packageFile);
+            }
+        }
+
+        return packageFiles;
+    }
+
+    public void packageFilesAction(PackageInfo packageInfo, BiConsumer<File, String> action) {
+        List<PackageFile> packageFiles = getPackageFiles(packageInfo);
+
+        for (PackageFile packageFile: packageFiles) {
+            File packageFilesArchive = getLocalFullFilePath(
+                    "origin",
+                    packageInfo.getCpmPackage().getName(),
+                    packageInfo.getOriginalPackage().getVersion(),
+                    packageFile.getFileName()
+            );
+
+            String packageFilesArchiveFileUrl = getRemoteFullFilePath(
+                    "origin",
+                    packageInfo.getCpmPackage().getName(),
+                    packageInfo.getOriginalPackage().getVersion(),
+                    packageFile.getFileName()
+            );
+
+            action.accept(packageFilesArchive, packageFilesArchiveFileUrl);
+        }
     }
 }

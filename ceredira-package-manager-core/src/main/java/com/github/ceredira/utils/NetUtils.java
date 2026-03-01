@@ -1,5 +1,6 @@
 package com.github.ceredira.utils;
 
+import java.io.File;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -11,22 +12,32 @@ import java.nio.file.StandardCopyOption;
 
 public class NetUtils {
 
-    public static void downloadFile(String fileUrl, String destPath) throws Exception {
-        URL url = new URL(fileUrl);
+    public static void downloadFile(String urlStr, String destPath) throws Exception {
+        URL url = new URL(urlStr);
+        downloadFile(url, destPath);
+    }
+
+    public static void downloadFile(URL url, String destPathStr) throws Exception {
+        Path destPath = Paths.get(destPathStr);
+        downloadFile(url, destPath);
+    }
+
+    public static void downloadFile(String urlStr, File destFile) throws Exception {
+        Path destPath = destFile.toPath();
+        URL url = new URL(urlStr);
         downloadFile(url, destPath);
     }
 
     /**
      * Скачивает файл по ссылке и сохраняет его по указанному пути.
      *
-     * @param fileUrl  Прямая ссылка на файл
+     * @param url  Прямая ссылка на файл
      * @param destPath Путь, по которому файл будет сохранен (включая имя файла)
      * @throws Exception Если произошла ошибка ввода-вывода или сети
      */
-    public static void downloadFile(URL url, String destPath) throws Exception {
+    public static void downloadFile(URL url, Path destPath) throws Exception {
         try (InputStream in = url.openStream()) {
-            Path target = Paths.get(destPath);
-            Files.copy(in, target, StandardCopyOption.REPLACE_EXISTING);
+            Files.copy(in, destPath, StandardCopyOption.REPLACE_EXISTING);
         }
     }
 
