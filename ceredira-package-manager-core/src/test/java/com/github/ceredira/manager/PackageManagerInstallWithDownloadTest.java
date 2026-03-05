@@ -35,7 +35,6 @@ class PackageManagerInstallWithDownloadTest extends BaseTest {
         copyFile(new File("src/test/resources/everything-1.4.1.1028-r1.yaml"),
                 new File(destinationPackageResFolder, "everything-1.4.1.1028-r1.yaml"));
 
-        pm = new PackageManager();
         pm.install("everything", "1.4.1.1028", "r1");
         log.info("Пакет установлен");
     }
