@@ -73,7 +73,7 @@ public class PackageManager {
 
         // ToDo: Проверить, что пакет существует
         if (!PackageRepository.isPackageInstalled(packageName, versionName, revisionName)) {
-            String fullPackageName = String.format("%s-%s-s", packageName, versionName, revisionName);
+            String fullPackageName = String.format("%s-%s-%s", packageName, versionName, revisionName);
             throw new RuntimeException("Указанного пакета не существует: " + fullPackageName);
         }
 
@@ -158,10 +158,6 @@ public class PackageManager {
 
     private boolean isInstalled(CpmPackage pkg) {
         throw new RuntimeException("Не реализовано");
-    }
-
-    private record DownloadTask(PackageFile filesArchive, File filesPath,
-                                PackageFile metaArchive, File metaPath) {
     }
 
     private PackageInfo searchPackageInfo(String packageName, String versionName, String revisionName) {
