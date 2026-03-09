@@ -27,7 +27,7 @@ public class PackageManagerListTest extends BaseTest {
         File destinationIndexFile = new File(String.valueOf(testRoot), "var/cpm/origin/index.yaml");
         FileUtils.createFileWithContent(destinationIndexFile, repositoryOriginIndexYaml);
 
-        Set<String> packages = pm.list("origin", false);
+        Set<String> packages = pm.list("origin");
         log.info("packages: {}", packages);
     }
 }

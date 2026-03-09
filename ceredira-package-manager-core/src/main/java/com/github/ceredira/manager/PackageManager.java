@@ -114,8 +114,11 @@ public class PackageManager {
         throw new RuntimeException("Не реализовано");
     }
 
-    public Set<String> list(String repositoryName, boolean installed) {
-        return PackageRepository.getPackages(repositoryName);
+    // Этот метод используется только в тесте
+    public Set<String> list(String repositoryName) {
+        Set<String> installedPackages = PackageRepository.getInstalledSet(repositoryName);
+
+        return installedPackages;
     }
 
     public List<CpmPackage> search(String query) {
@@ -135,7 +138,7 @@ public class PackageManager {
     }
 
     // Дополнительные методы
-    private void download(String packageName, String versionName, String revisionName) {
+    public void download(String packageName, String versionName, String revisionName) {
         String repositoryName = "origin";
         PackageInfo packageInfo = searchPackageInfo(packageName, versionName, revisionName);
         download(packageInfo);
@@ -156,8 +159,9 @@ public class PackageManager {
         });
     }
 
-    private boolean isInstalled(CpmPackage pkg) {
-        throw new RuntimeException("Не реализовано");
+    private boolean isInstalled(String packageName, String versionName, String revisionName) {
+        String repositoryName = "origin";
+       return PackageRepository.isPackageInstalled(packageName, versionName, revisionName);
     }
 
     private PackageInfo searchPackageInfo(String packageName, String versionName, String revisionName) {
