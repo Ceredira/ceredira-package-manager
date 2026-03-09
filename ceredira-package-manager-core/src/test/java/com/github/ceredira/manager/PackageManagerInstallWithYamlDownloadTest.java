@@ -8,13 +8,11 @@ import org.junit.jupiter.api.Test;
 
 import java.io.File;
 
-import static com.github.ceredira.utils.FileUtils.copyFile;
-
 @Slf4j
-class PackageManagerInstallTest extends BaseTest {
+class PackageManagerInstallWithYamlDownloadTest extends BaseTest {
 
     @Test
-    public void packageInstall() {
+    public void packageInstallWithYamlDownloadTest() {
         File testRoot = Config.getRootPath();
         PackageManager pm = new PackageManager();
 
@@ -28,16 +26,6 @@ class PackageManagerInstallTest extends BaseTest {
         File repositoryOriginIndexYaml = new File("src/test/resources/index.yaml");
         File destinationIndexFile = new File(String.valueOf(testRoot), "var/cpm/origin/index.yaml");
         FileUtils.createFileWithContent(destinationIndexFile, repositoryOriginIndexYaml);
-
-        File destinationPackageResFolder = new File(String.valueOf(testRoot),
-                "var/cpm/origin/e/everything/1.4.1.1028");
-        destinationPackageResFolder.mkdirs();
-        copyFile(new File("src/test/resources/everything-1.4.1.1028-r1.cpmf.7z"),
-                new File(destinationPackageResFolder, "everything-1.4.1.1028-r1.cpmf.7z"));
-        copyFile(new File("src/test/resources/everything-1.4.1.1028-r1.cpmm.7z"),
-                new File(destinationPackageResFolder, "everything-1.4.1.1028-r1.cpmm.7z"));
-        copyFile(new File("src/test/resources/everything-1.4.1.1028-r1.yaml"),
-                new File(destinationPackageResFolder, "everything-1.4.1.1028-r1.yaml"));
 
         pm.install("everything", "1.4.1.1028", "r1");
         log.info("Пакет установлен");

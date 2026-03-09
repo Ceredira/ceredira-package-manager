@@ -8,6 +8,12 @@ import java.io.File;
 @Slf4j
 public class PackageInfoUtils {
 
+    public static PackageInfo getPackageInfo(File packageFile) {
+        PackageInfo packageInfo = YamlUtils.loadFromFile(packageFile, PackageInfo.class);
+
+        return packageInfo;
+    }
+
     public static PackageInfo getPackageInfo(String packageName) {
         File file = new File(packageName);
         PackageInfo packageInfo = YamlUtils.loadFromFile(file, PackageInfo.class);

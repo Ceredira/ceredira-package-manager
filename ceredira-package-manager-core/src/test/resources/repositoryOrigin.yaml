@@ -1,6 +1,6 @@
 name: origin
 description: Original Ceredira Package Manager repository
-url: https://example.com/repo.git
+url: http://localhost:80/
 type: remote
 enabled: true
 properties:

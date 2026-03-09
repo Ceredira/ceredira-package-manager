@@ -10,6 +10,10 @@ import lombok.Getter;
 import java.io.File;
 import java.util.*;
 
+import static com.github.ceredira.utils.NetUtils.downloadFile;
+import static com.github.ceredira.utils.Utils.getLocalFullFilePath;
+import static com.github.ceredira.utils.Utils.getRemoteFullFilePath;
+
 public class PackageRepository {
     @Getter
     private static final Map<String, RepositoryIndex> indexes = new HashMap<>();
@@ -95,19 +99,27 @@ public class PackageRepository {
                 .getVersions().get(version)
                 .getRevisions().get(revision).getSha256();
 
-        File root = Config.getFileFromRoot("var/cpm");
-
-        String fileName = String.format("%1$s/%2$s/%3$s/%4$s/%5$s/%4$s-%5$s-%6$s.yaml",
-                repositoryRoot,
-                repositoryName,
-                packageName.charAt(0),
+        String yamlFileName = String.format("%1$s-%2$s-%3$s.yaml",
                 packageName,
                 version,
                 revision);
 
-        // скачивание yaml файла, если его нет
+        File localYamlFile = getLocalFullFilePath(repositoryName, packageName, version, yamlFileName);
 
-        PackageInfo packageInfo = PackageInfoUtils.getPackageInfo(fileName);
+        // скачивание yaml файла, если его нет
+        if (!localYamlFile.exists()) {
+            try {
+                String remoteYamlFile = getRemoteFullFilePath(repositoryName, packageName, version, yamlFileName);
+                if (!localYamlFile.getParentFile().exists()) {
+                    localYamlFile.getParentFile().mkdirs();
+                }
+                downloadFile(remoteYamlFile, localYamlFile);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        PackageInfo packageInfo = PackageInfoUtils.getPackageInfo(localYamlFile);
 
         return packageInfo;
     }
