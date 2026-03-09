@@ -1,6 +1,7 @@
 package com.github.ceredira.utils;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -22,31 +23,29 @@ public class YamlUtils {
 
     public static <T> T loadFromFile(File file, Class<T> clazz) {
         // Проверка входных параметров
-        if (file == null) {
-            throw new IllegalArgumentException("File cannot be null");
-        }
+        checkFile(file);
 
         if (clazz == null) {
             throw new IllegalArgumentException("Class cannot be null");
         }
 
-        // Проверка существования файла
-        if (!file.exists()) {
-            throw new IllegalArgumentException("File does not exist: " + file.getAbsolutePath());
+        try {
+            return objectMapper.readValue(file, clazz);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to read configuration from file: " + file.getAbsolutePath(), e);
         }
+    }
 
-        // Проверка, что файл не является директорией
-        if (file.isDirectory()) {
-            throw new IllegalArgumentException("File is actually a directory: " + file.getAbsolutePath());
-        }
+    public static <T> T loadFromFile(File file, TypeReference<T> typeReference) {
+        // Проверка входных параметров
+        checkFile(file);
 
-        // Проверка, что файл читаем
-        if (!file.canRead()) {
-            throw new IllegalArgumentException("File is not readable: " + file.getAbsolutePath());
+        if (typeReference == null) {
+            throw new IllegalArgumentException("typeReference cannot be null");
         }
 
         try {
-            return objectMapper.readValue(file, clazz);
+            return objectMapper.readValue(file, typeReference);
         } catch (IOException e) {
             throw new RuntimeException("Failed to read configuration from file: " + file.getAbsolutePath(), e);
         }
@@ -84,6 +83,27 @@ public class YamlUtils {
             objectMapper.writeValue(file, object);
         } catch (IOException e) {
             throw new RuntimeException("Failed to write configuration to file: " + file.getAbsolutePath(), e);
+        }
+    }
+
+    private static void checkFile(File file) {
+        if (file == null) {
+            throw new IllegalArgumentException("File cannot be null");
+        }
+
+        // Проверка существования файла
+        if (!file.exists()) {
+            throw new IllegalArgumentException("File does not exist: " + file.getAbsolutePath());
+        }
+
+        // Проверка, что файл не является директорией
+        if (file.isDirectory()) {
+            throw new IllegalArgumentException("File is actually a directory: " + file.getAbsolutePath());
+        }
+
+        // Проверка, что файл читаем
+        if (!file.canRead()) {
+            throw new IllegalArgumentException("File is not readable: " + file.getAbsolutePath());
         }
     }
 }

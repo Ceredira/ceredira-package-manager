@@ -33,3 +33,5 @@ build/
 
 ### Mac OS ###
 .DS_Store
+/ceredira-package-manager-core/src/test/resources/everything-1.4.1.1028-r1.cpmf.7z
+/ceredira-package-manager-core/src/test/resources/everything-1.4.1.1028-r1.cpmm.7z
