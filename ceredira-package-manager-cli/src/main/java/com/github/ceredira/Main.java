@@ -13,6 +13,7 @@ import picocli.CommandLine.Parameters;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.Callable;
 
 @Command(name = "cpm", mixinStandardHelpOptions = true,
@@ -21,7 +22,9 @@ import java.util.concurrent.Callable;
         subcommands = {
                 Main.RepositoryGroup.class,
                 Main.InstallCmd.class,
-                Main.UninstallCmd.class
+                Main.UninstallCmd.class,
+                Main.PackageListCmd.class,
+                Main.PackageDownloadCmd.class
         })
 public class Main implements Callable<Integer> {
 
@@ -62,6 +65,39 @@ public class Main implements Callable<Integer> {
             PackageInfoParsed info = InstallUtils.parse(commandString);
             packageManager.uninstall(info.packageName(), info.packageVersion(), info.packageRevision());
             System.out.println("Пакет " + info.packageName() + " удален");
+        }
+    }
+
+    @Command(name = "list", description = "Показать список пакетов")
+    static class PackageListCmd implements Runnable {
+
+        @Override
+        public void run() {
+            String repositoryName = "origin";
+            System.out.println("=== Список установленных пакетов в репозитории [" + repositoryName + "] ===");
+            Set<String> installedPackages = packageManager.list(repositoryName);
+
+            if (installedPackages.isEmpty()) {
+                System.out.println("Репозиторий пуст");
+                return;
+            }
+
+            for (String pkg : installedPackages) {
+                System.out.println("    [I] " + pkg);
+            }
+        }
+    }
+
+    @Command(name = "download", description = "Скачать пакет")
+    static class PackageDownloadCmd implements Runnable {
+
+        @Parameters(index = "0", description = "Имя пакета")
+        String commandString;
+        @Override
+        public void run() {
+            PackageInfoParsed info = InstallUtils.parse(commandString);
+            packageManager.download(info.packageName(), info.packageVersion(), info.packageRevision());
+            System.out.println("Началась загрузка архивов пакета " + commandString);
         }
     }
 

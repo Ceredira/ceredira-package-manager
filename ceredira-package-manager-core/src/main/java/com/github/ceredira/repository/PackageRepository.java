@@ -1,11 +1,13 @@
 package com.github.ceredira.repository;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.github.ceredira.config.Config;
 import com.github.ceredira.model.*;
 import com.github.ceredira.utils.PackageInfoUtils;
 import com.github.ceredira.utils.RepositoryIndexUtils;
 import com.github.ceredira.utils.YamlUtils;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
 import java.util.*;
@@ -14,6 +16,7 @@ import static com.github.ceredira.utils.NetUtils.downloadFile;
 import static com.github.ceredira.utils.Utils.getLocalFullFilePath;
 import static com.github.ceredira.utils.Utils.getRemoteFullFilePath;
 
+@Slf4j
 public class PackageRepository {
     @Getter
     private static final Map<String, RepositoryIndex> indexes = new HashMap<>();
@@ -38,7 +41,8 @@ public class PackageRepository {
         }
 
         if (repositoryInstalledYaml.exists()) {
-            installed = (Map<String, Set<String>>) YamlUtils.loadFromFile(repositoryInstalledYaml, Map.class);
+            TypeReference<HashMap<String, Set<String>>> typeReference = new TypeReference<>() {};
+            installed = YamlUtils.loadFromFile(repositoryInstalledYaml, typeReference);
         }
     }
 
@@ -150,5 +154,20 @@ public class PackageRepository {
 
         String fullPackageName = String.format("%s-%s-%s", packageName, versionName, revisionName);
         return installed.get("origin").contains(fullPackageName);
+    }
+
+    public static Set<String> getInstalledSet(String repositoryName) {
+        Set<String> installedSet = Collections.emptySet();
+
+        if (installed != null) {
+            // Возвращаем Set, так как в поле installed лежат именно Set (см. блок static)
+            installedSet = installed.getOrDefault(repositoryName, Collections.emptySet());
+        }
+
+        if (installedSet.isEmpty()) {
+            log.debug("Репозиторий пуст");
+        }
+
+        return installedSet;
     }
 }
